@@ -3,13 +3,11 @@
    ========================================================================== */
 @font-face {
   font-family: 'grobold';
-  src:  url('../fonts/GROBOLD.ttf');
+  src: url('../fonts/GROBOLD.ttf');
 }
-html, body {
+html, body, #menu {
     height: 100%;
     width: 100%;
-    font-size: 100%;
-    overflow: hidden;
 }
 /* timer hud */
 header {
@@ -43,8 +41,52 @@ header .timer {
   color:#fff;
 }
 
+/* Menu */
+#menu {
+  margin:0;
+}
+#menu li {
+  padding-left: 5%;
+  padding-top: 5%;
+}
+#menu li h1 {
+  color: #fff;
+  font-weight: bold;
+  font-size: 4em;
+  text-shadow: 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000;
+}
+#menu li h2 {
+  color: #fff;
+  font-size: 2em;
+  text-shadow: 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000;
+}
+#menu li.play {
+  height:33.33%;
+  background: url(../img/menu/play.jpg) no-repeat center center;
+  background-size: cover;
+}
+#menu li.collection {
+  height:33.33%;
+  background: url(../img/menu/collection.jpg) no-repeat center center;
+  background-size: cover;
+}
+#menu li.ranking {
+  height:33.34%;
+  background: url(../img/menu/ranking.jpg) no-repeat center center;
+  background-size: cover;
+}
+/*
+#menu li div {
+  height: 100%;
+  animation: zum 120s 1;
+}
 
-
+TODO: anim
+@keyframes zum {
+    from {transform: scale(1);}
+    to {transform: scale(2);}
+}
+*/
 /* locations */
 section.locations {
 	height: 20%;
