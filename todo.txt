@@ -1,0 +1,11 @@
+Game: Cool
+Game: More POIs
+Game: PCats simplificadas
+Game: scorescreen
+Game: swipe photos
+Game: clic photo center carousel?
+Game: click photo boing
+Col: UI + Cool
+Menu: UI + Cool
+GMC: Desktop UI
+Deploy: FR.es -> server

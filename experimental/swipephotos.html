@@ -1,0 +1,87 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>CN</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../css/normalize.min.css">
+	<style>
+		html {
+			width: 100%;
+			height: 100%;
+		}
+		body {
+			background-color: #ccc;
+			width: 100%;
+			height: 100%;
+			background: url(rope.png) repeat-x center center;
+			/* todo: easter egg cuando se vea el container, tipico monigote asomandose o una cuerda sujetando el carousel */
+		}
+		#map {
+			width:100%;
+			height:80%;
+			background-color: brown;
+			transition: transform 0.25s ease-in-out;
+		}
+		#container.default {
+			transition: transform 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+			transform: translate3d(0,-80%,0);
+			height:100%;
+		}
+		#container.map {
+			transform: translate3d(0, 0, 0);
+		}
+		.carousel {
+			white-space: nowrap;
+			overflow: hidden;
+			position: fixed;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			transition: transform 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+		}
+		.carousel.compact {
+			box-sizing: border-box;
+			border-left: 0.8vw solid black;
+			border-right: 0.8vw solid black;
+		}
+		.carousel li {
+			display: inline-block;
+			width: 100vw;
+			height: 100%;
+			transition: height 0.25s cubic-bezier(0.165, 0.84, 0.44, 1), width 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+		}
+		.carousel.compact li {
+			width: 24.6vw;
+			height: 20%;
+			box-sizing: border-box;
+			border-left: 0.8vw solid black;
+			border-right: 0.8vw solid black;
+		}
+		img {
+			max-width:100%;
+			/*display: none;*/
+		}
+	</style>
+</head>
+
+<body>
+	<div id="container" class="default">
+		<div id="map" class="animate"></div>
+		<ul class="carousel animate">
+			<li style="background-color:#f00"><img src="1.jpg" /></li><li style="background-color:#0f0"><img src="2.jpg" /></li><li style="background-color:#00f"><img src="3.jpg" /></li><li style="background-color:#ff0"><img src="4.jpg" /></li>
+		</ul>
+	</div>
+	<script src="hammer.min.js"></script>
+	<script src="hammer-time.min.js"></script>
+	<script src="carousel.js"></script>
+	<script src="ui.js"></script>
+	<script>
+		new UI();
+	</script>
+</body>
+
+</html>

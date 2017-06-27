@@ -1,0 +1,355 @@
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+@font-face {
+  font-family: 'grobold';
+  src:  url('../fonts/GROBOLD.ttf');
+}
+html, body {
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    overflow: hidden;
+}
+/* timer hud */
+header {
+  position: absolute;
+  top:0;
+  right:0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  box-sizing: border-box;
+  border-left: 3px solid black;
+  border-bottom: 3px solid black;
+  border-bottom-left-radius: 10px;
+  padding: 4px 8px;
+}
+header.danger {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+header span {
+  font-family: grobold;
+  text-align: center;
+  width:100%;
+  display:block;
+  text-shadow: 0 0 0.2em #000,0 0 0.2em #000,0 0 0.2em #000;
+}
+header .text {
+  font-size: 80%;
+  color:#feecad;
+}
+header .timer {
+  font-size: 160%;
+  color:#fff;
+}
+
+
+
+/* locations */
+section.locations {
+	height: 20%;
+  box-sizing: border-box;
+  border-top: 1px solid #666;
+  background-color: #000;
+  padding:2% 1%;
+  overflow-x: auto;
+}
+#locations {
+	list-style: none;
+	margin:0;
+	padding:0;
+	white-space: nowrap;
+	height: 100%;
+}
+.location {
+	display: inline-block;
+	box-sizing: border-box;
+	height: 100%;
+  margin: 0 1%;
+	width: 120px;
+	position: relative;
+}
+/* TODO: GOOGLE LO HACE CON IMG EN VEZ DE CON DIV, le pone vertical align middle y santas pascuas*/
+.location .photo {
+	height:100%;
+	width:100%;
+	background-size: cover;
+}
+/* TODO: animation al hacer select, boing hacia adentro y hacia afuera */
+.location.selected {
+  border: 2px solid #fff;
+}
+.location.selected .photo {
+  width:116px;
+}
+.location.found {
+  -webkit-filter: contrast(150%);
+	filter: contrast(150%);
+}
+.location.failed {
+	-webkit-filter: sepia(100%);
+	filter: sepia(100%);
+}
+/* attempts */
+.attemptlist {
+	list-style: none;
+  position: absolute;
+  margin:0;
+	padding:0;
+	left:0;
+	bottom:0;
+  width:100%;
+  text-align: center;
+}
+.attempt {
+	height: 15px;
+	width: 15px;
+	box-sizing: border-box;
+	border:1px solid #fff;
+	padding:1px;
+  margin: 0 5px;
+  display: inline-block;
+  transition: background-color 1s;
+}
+.attempt.good {
+	background-color: green;
+}
+.attempt.bad {
+	background-color: red;
+}
+
+
+
+#map {
+	width: 100%;
+	height: 80%;
+}
+footer {
+	height: 10%;
+}
+footer nav {
+	height: 100%;
+}
+footer a {
+	display: inline-block;
+	box-sizing: border-box;
+	text-align: center;
+	height: 100%;
+	font-size: 32px;
+	position: relative;
+	padding: 0 5%;
+	text-decoration: none;
+	background-color: #384d63;
+  color: #fff;
+  line-height: 150%;
+  font-weight: bold;
+  border-top:1px solid #0f3b69;
+  -webkit-box-shadow: 0px -2px 2px 0px #0f3b69;
+  -moz-box-shadow: 0px -2px 2px 0px #0f3b69;
+  box-shadow: 0px -2px 2px 0px #0f3b69;
+  text-shadow: 0 0 0.1em #000, 0 0 0.1em #000, 0 0 0.1em #000;
+  z-index: 400;
+}
+footer a .cooldown {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+#mapToggle {
+	width:100%;
+}
+/* elementos flotantes */
+.message {
+	width: 100%;
+	position: absolute;
+	z-index: 1000;
+	opacity: 0;
+	text-align: center;
+	top: 100%;
+	left: 0;
+	font-size: 300%;
+	font-weight: bold;
+}
+/* distancias */
+.message.message-1 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #ff0000, 0 0 0.3em #ff0000, 0 0 0.1em #ff0000
+}
+.message.message-2 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #ff8000, 0 0 0.3em #ff8000, 0 0 0.1em #ff8000;
+}
+.message.message-3 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #ffff00, 0 0 0.3em #ffff00, 0 0 0.1em #ffff00;
+}
+.message.message-4 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #808080, 0 0 0.3em #808080, 0 0 0.1em #808080;
+}
+.message.message-5 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #0000ff, 0 0 0.3em #0000ff, 0 0 0.1em #0000ff;
+}
+.message.message-6 {
+	color:#fff;
+	text-shadow: 0 0 0.5em #fff, 0 0 0.3em #fff, 0 0 0.1em #fff;
+}
+/* aciertos y fallos */
+.message.message-7 {
+	color:#0f0;
+	text-shadow: 0 0 0.5em #fff, 0 0 0.3em #fff, 0 0 0.1em #fff;
+}
+.message.message-8 {
+	color:#00bd00;
+	text-shadow: 0 0 0.5em #fff, 0 0 0.3em #fff, 0 0 0.1em #fff;
+}
+.message.message-9 {
+	color:#008500;
+	text-shadow: 0 0 0.5em #fff, 0 0 0.3em #fff, 0 0 0.1em #fff;
+}
+.message.message-0 {
+	color:#f00;
+	text-shadow: 0 0 0.5em #fff, 0 0 0.3em #fff, 0 0 0.1em #fff;
+}
+.message.animate {
+	-webkit-transition: transform 1500ms cubic-bezier(0.000, 0.750, 1.000, 0.250), opacity 500ms cubic-bezier(0.000, 0.750, 1.000, 0.250);
+	   -moz-transition: transform 1500ms cubic-bezier(0.000, 0.750, 1.000, 0.250), opacity 500ms cubic-bezier(0.000, 0.750, 1.000, 0.250);
+	     -o-transition: transform 1500ms cubic-bezier(0.000, 0.750, 1.000, 0.250), opacity 500ms cubic-bezier(0.000, 0.750, 1.000, 0.250);
+	        transition: transform 1500ms cubic-bezier(0.000, 0.750, 1.000, 0.250), opacity 500ms cubic-bezier(0.000, 0.750, 1.000, 0.250);
+	transform: translateY(-1000%);
+	opacity: 1;
+}
+
+/* ----Sobreescribir CSS Leaflet---- */
+.leaflet-container .leaflet-control-attribution {
+	background: none;
+	color: #fff;
+	text-shadow: 0 0 0.1em #000,0 0 0.1em #000,0 0 0.1em #000,0 0 0.1em #000,0 0 0.1em #000;
+}
+/* --------------------------------- */
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+
+@media only screen and (min-width: 480px) {
+}
+
+@media only screen and (min-width: 768px) {
+}
+
+@media only screen and (min-width: 1140px) {
+}
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+    *,
+    *:before,
+    *:after {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    a[href^="#"]:after,
+    a[href^="javascript:"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
