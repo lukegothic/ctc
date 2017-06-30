@@ -11,7 +11,7 @@ Asunciones:
 	// CONST
 	var reTranslate3d = /translate3d\((-?\d+(?:\.\d*)?)px, (-?\d+(?:\.\d*)?)px, (-?\d+(?:\.\d*)?)px\)/;
 	// PROPS
-	var items, currentIndex;
+	var items, itemHeights, currentIndex = 0;
 	var offset, minoffset, maxoffset, startoffset, hammertime;
 	// FUNCTS
 	function getTranslate3d(element) {
@@ -22,26 +22,24 @@ Asunciones:
 		element.style.transform = "translate3d(" + translate3d[0] + "px," + translate3d[1] + "px," + translate3d[2] + "px)";
 	}
 	function setItem(idx) {
-		currentIndex = Math.max(Math.min(currentIndex + idx, items.length - 1), 0)
-		var targetx = Array.from(items).filter((item, i) => i < currentIndex).reduce((sum, item) => sum - item, 0);
-		//hammertime.element.classList.add("animate");
+		items[currentIndex].classList.remove("carousel-active");
+		currentIndex = Math.max(Math.min(currentIndex + idx, itemHeights.length - 1), 0)
+		items[currentIndex].classList.add("carousel-active")
+		var targetx = itemHeights.filter((itemH, i) => i < currentIndex).reduce((sum, itemH) => sum - itemH, 0);
 		setTranslate3d(hammertime.element, [targetx,0,0]);
 	}
-	function prev(e) {
+	function prev() {
 		setItem(-1);
 	}
-	function curr(e) {
-		setItem(0);
-	}
-	function next(e) {
+	function next() {
 		setItem(1);
+	}
+	function restore() {
+		setItem(0);
 	}
 	function reset(keepSelection) {
 		currentIndex = (keepSelection && currentIndex) || 0;
 		setTranslate3d(hammertime.element, [0,0,0]);
-	}
-	function restore() {
-		setItem(0);
 	}
 	function panstart(e) {
 		startoffset = getTranslate3d(hammertime.element);
@@ -51,14 +49,14 @@ Asunciones:
 		setTranslate3d(hammertime.element, [targetx,0,0]);
 	}
 	function panend(e) {
-		if (Math.abs(e.deltaX) >= items[currentIndex] / 2) {
+		if (Math.abs(e.deltaX) >= itemHeights[currentIndex] / 2) {
 			if (e.direction === Hammer.DIRECTION_RIGHT) {
 				prev();
 			} else {
 				next();
 			}
 		} else {
-			curr();
+			restore();
 		}
 	}
 	function disable() {
@@ -72,17 +70,18 @@ Asunciones:
 		!hammertime.handlers.panend && hammertime.on("panend", panend);
 	}
 	function updateSize() {
-		items = Array.from(hammertime.element.querySelectorAll("li")).map(li => li.getBoundingClientRect().width);
+		items = hammertime.element.querySelectorAll("li");
+		itemHeights = Array.from(items).map(li => li.getBoundingClientRect().width);
 		minoffset = offset;
 		maxoffset = -(hammertime.element.getBoundingClientRect().width - document.body.getBoundingClientRect().width) - offset;
 	}
 	// CTOR
 	var Carousel = function(item, off) {
-		currentIndex = 0;
 		offset = off || 0;
 		hammertime = (item instanceof Hammer.Manager && item) || new Hammer(item);
 		updateSize();
 		enable();
+		restore();
 		/*
 		TODO:SWIPE
 		hammertime.on("swipeleft", next);

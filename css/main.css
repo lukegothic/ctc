@@ -48,6 +48,11 @@ header .timer {
 #menu li {
   padding-left: 5%;
   padding-top: 5%;
+  box-sizing: border-box;
+}
+#menu li div {
+  float:left;
+  width:56%;
 }
 #menu li h1 {
   color: #fff;
@@ -62,27 +67,34 @@ header .timer {
 }
 #menu li.play {
   height:33.33%;
+  border-bottom: 1px solid #333;
   background: url(../img/menu/play.jpg) no-repeat center center;
   background-size: cover;
 }
 #menu li.collection {
-  height:33.33%;
+  height:33.34%;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #333;
   background: url(../img/menu/collection.jpg) no-repeat center center;
   background-size: cover;
 }
-#menu li.ranking {
-  height:33.34%;
-  background: url(../img/menu/ranking.jpg) no-repeat center center;
-  background-size: cover;
+#menu li.collection svg {
+  transform: scale(0.9);
 }
-.path {
-  stroke-dasharray: 252; /*2*PI*R*/
-  stroke-dashoffset: 252; /*2*PI*R*/
+#menu li.collection .path {
+  stroke-dasharray: 314; /*2*PI*R*/
+  stroke-dashoffset: 314; /*2*PI*R*/
   transition: stroke-dashoffset 1s ease-in-out;
   transform: rotate(270deg);
   transform-origin: center;
-  stroke-dashoffset: 0;
+  stroke-dashoffset: 230;
   /* TODO: EN JS, dashoffset -= dashoffset * progresspercent; */
+}
+#menu li.ranking {
+  height:33.33%;
+  border-top: 1px solid #ccc;
+  background: url(../img/menu/ranking.jpg) no-repeat center center;
+  background-size: cover;
 }
 /*
 #menu li div {
