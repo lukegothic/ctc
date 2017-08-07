@@ -4,6 +4,7 @@
     // CONSTS
     var timePerLocation = 30000;
     var locationsToGuess = 5;
+		var failpenalty = 10000;
     // VARS
     var locations, map, timeleft, ui;
     function initMap() {
@@ -125,24 +126,36 @@
         }
       });
     }
-    function updateUI() {
+    function updateTimer() {
       ui.remainingtimebar.style.width = ((timeleft * 100) / (timePerLocation * locationsToGuess)) + "%";
       var seconds = Math.round(timeleft / 1000);
       ui.timeleft.innerHTML = "{0}{1}".format((seconds >= 60 ? Math.floor(seconds / 60) + ":" : ""), Math.ceil(seconds % 60).toString().padStart((seconds >= 60 ? 2 : 1), "0"));
     }
+		function updatePhotos() {
+			ui.leftphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[locations.features.length - 1].properties.id.toString().padStart(8,"0"));
+			ui.centralphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+			ui.rightphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
+		}
     function initUI() {
       ui = {};
       ui.carousel = document.getElementById("carousel");
-      ui.timeleftbar = document.getElementById("timeleftbar");
-      ui.remainingtimebar = ui.timeleftbar.querySelector(".bar");
-      ui.timeleft = document.getElementById("timeleft");
-      var photo = document.createElement("div");
-      photo.classList.add("photo");
-      photo.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
-      ui.carousel.appendChild(photo);
+      //var photo = docment.createElement("div");
+      //photo.classList.add("photo");
+      //photo.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+      //ui.carousel.appendChild(photo);
+			ui.leftphoto = ui.carousel.querySelector(".photo.left");
+			ui.leftphoto.addEventListener("click", prev);
+			ui.centralphoto = ui.carousel.querySelector(".photo.central");
+			ui.centralphoto.addEventListener("click", zoom);
+			ui.rightphoto = ui.carousel.querySelector(".photo.right");
+			ui.rightphoto.addEventListener("click", next);
+			updatePhotos();
+			ui.timeleftbar = document.getElementById("timeleftbar");
+			ui.remainingtimebar = ui.timeleftbar.querySelector(".bar");
+			ui.timeleft = document.getElementById("timeleft");
       ui.timeleftbar.classList.remove("hidden");
       ui.timeleft.classList.remove("hidden");
-      updateUI();
+      updateTimer();
     }
     var stopMain, lastFrameTime = 0;
     function gameLoop(time) {
@@ -152,7 +165,7 @@
           time: time,
           delta: time - lastFrameTime
         });
-        updateUI();
+        updateTimer();
       }
       lastFrameTime = time;
     }
@@ -163,10 +176,26 @@
 				end();
 			}
     }
+		function next() {
+			var first = locations.features.shift();
+			locations.features.push(first);
+			updatePhotos();
+		}
+		function prev() {
+			var last = locations.features.pop();
+			locations.features.unshift(last);
+			updatePhotos();
+		}
+		function zoom() {
+			ui.carousel.classList.toggle("thumbnail");
+		}
     function end() {
-
+			console.log("end");
+			ui.timeleftbar.classList.add("hidden");
+			ui.timeleft.classList.add("hidden");
     }
     function fail() {
+				timeleft = Math.max(timeleft - failpenalty, 0.0000001);
         document.body.classList.remove("shake-freeze");
         window.setTimeout(function() {
           document.body.classList.add("shake-freeze");
@@ -185,7 +214,13 @@
       });
     }
 		var gameObj = {
-      start: start
+      start: start,
+			// todo: eliminar estos metodos
+			next: next,
+			prev: prev,
+			locations: function() {
+				return locations;
+			}
 		};
 		return gameObj;
 
