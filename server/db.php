@@ -5,7 +5,7 @@ use Medoo\Medoo;
 $db = new Medoo([
     'database_type' => 'pgsql',
     'database_name' => 'ctc',
-    'server' => '127.0.0.1',
+    'server' => '192.168.1.14',
     'username' => 'postgres',
     'password' => 'postgres',
     'charset' => 'utf8',

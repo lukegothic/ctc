@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>¿Conoces tu Ciudad?</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      #timeleftbar {
+        position: absolute;
+        top:0;
+        left:0;
+        width:100%;
+        background-color: #888;
+        height: 2px;
+        -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.75);
+        box-shadow: 0 1px 2px 0px rgba(0,0,0,0.75);
+        opacity: 1;
+        transition:all 250ms linear;
+        transition-delay: 250ms;
+      }
+      #timeleftbar .bar {
+        height:2px;
+        background-color: #f00;
+        margin: 0 auto;
+        transition: width 25ms linear;
+      }
+      #timeleftbar.hidden {
+        opacity:0;
+      }
+      #timeleft {
+        color: #fff;
+        text-shadow: 0 0 0.2em #000, 0 0 0.2em #000, 0 0 0.2em #000;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        margin-left: -50px;
+        left:50%;
+        padding:5px;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border: 2px ridge #fff;
+        border-top:none;
+        margin-top:2px;
+        background-color: #888;
+        box-sizing: border-box;
+        font-size: 1.5em;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        -webkit-box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.75);
+        box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.75);
+        min-width: 100px;
+        text-align: center;
+        transition:all 350ms ease-in;
+      }
+      #timeleft.hidden {
+        transform: translateY(-50px);
+      }
+      #carousel {
+        position: absolute;
+      }
+      /*
+      #carousel {
+        top: 0;
+        left: 0;
+        position: absolute;
+        width:100%;
+        transition: all 500ms;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      #carousel .photo {
+        width:40%;
+        height:0;
+        padding-bottom: 100%;
+        -webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+        background-size: cover;
+        background-position: center;
+        transition: all 500ms;
+        position: absolute;
+        top:0;
+        box-sizing: border-box;
+        border: 5px solid white;
+        border-bottom-width: 10px;
+      }
+      */
+      #carousel.thumbnail {
+        top: inherit;
+        left: inherit;
+				bottom: 40px;
+				right: 70px;
+        width: 13%;
+      }
+      #carousel.thumbnail .photo {
+        width:100%;
+        height:0;
+        padding-bottom: 100%;
+				-webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+				-moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+				box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+        background-size: cover;
+        background-position: center;
+        transition: all 500ms;
+        position: absolute;
+        bottom:0;
+        box-sizing: border-box;
+        border: 5px solid white;
+        border-bottom-width: 10px;
+      }
+      #carousel.thumbnail .photo.left {
+        /*
+        transform: rotate(-5deg) translateX(-20px);
+        transform-origin: bottom right;
+        */
+        opacity: 0.6;
+        z-index: 3;
+      }
+      #carousel.thumbnail .photo.lefthidden {
+        /*
+        transform: rotate(-10deg);
+        transform-origin: bottom right;
+        */
+        opacity: 0;
+        z-index: 1;
+      }
+      #carousel.thumbnail .photo.center {
+        z-index: 5;
+      }
+      #carousel.thumbnail .photo.right {
+        /*
+        transform: rotate(5deg) translateX(20px);
+        transform-origin: bottom left;
+        */
+        opacity: 0.6;
+        z-index: 4;
+      }
+      #carousel.thumbnail .photo.righthidden {
+      /*
+        transform: rotate(10deg);
+        transform-origin: bottom left;
+        */
+        opacity: 0;
+        z-index: 2;
+      }
+      /* fotos encontradas */
+			.guessmarker {
+				position: absolute;
+				bottom: 29px;
+				right: 15px;
+			}
+			.guessmarker path {
+				fill:none;
+				stroke:#00ff00;
+				stroke-width:3px;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+				stroke-miterlimit: 10;
+				stroke-opacity:1;
+				stroke-dasharray: 194;
+				stroke-dashoffset: 194;
+			}
+			.guessmarker.animate path {
+				animation: write1 1s 1 ease-out;
+			}
+			@keyframes write1 {
+				0% {
+					stroke-dashoffset: 194;
+				}
+				100% {
+					stroke-dashoffset: 0;
+				}
+			}
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .shake-horizontal{transform-origin:center center}@keyframes shake-horizontal{2%{transform:translate(3px, 0) rotate(0)}4%{transform:translate(9px, 0) rotate(0)}6%{transform:translate(7px, 0) rotate(0)}8%{transform:translate(-7px, 0) rotate(0)}10%{transform:translate(-9px, 0) rotate(0)}12%{transform:translate(7px, 0) rotate(0)}14%{transform:translate(2px, 0) rotate(0)}16%{transform:translate(0px, 0) rotate(0)}18%{transform:translate(-3px, 0) rotate(0)}20%{transform:translate(7px, 0) rotate(0)}22%{transform:translate(-3px, 0) rotate(0)}24%{transform:translate(-1px, 0) rotate(0)}26%{transform:translate(1px, 0) rotate(0)}28%{transform:translate(-5px, 0) rotate(0)}30%{transform:translate(-8px, 0) rotate(0)}32%{transform:translate(-4px, 0) rotate(0)}34%{transform:translate(2px, 0) rotate(0)}36%{transform:translate(-1px, 0) rotate(0)}38%{transform:translate(-8px, 0) rotate(0)}40%{transform:translate(4px, 0) rotate(0)}42%{transform:translate(-9px, 0) rotate(0)}44%{transform:translate(1px, 0) rotate(0)}46%{transform:translate(2px, 0) rotate(0)}48%{transform:translate(9px, 0) rotate(0)}50%{transform:translate(-6px, 0) rotate(0)}52%{transform:translate(7px, 0) rotate(0)}54%{transform:translate(1px, 0) rotate(0)}56%{transform:translate(7px, 0) rotate(0)}58%{transform:translate(-6px, 0) rotate(0)}60%{transform:translate(10px, 0) rotate(0)}62%{transform:translate(-5px, 0) rotate(0)}64%{transform:translate(4px, 0) rotate(0)}66%{transform:translate(-2px, 0) rotate(0)}68%{transform:translate(-2px, 0) rotate(0)}70%{transform:translate(-3px, 0) rotate(0)}72%{transform:translate(0px, 0) rotate(0)}74%{transform:translate(-7px, 0) rotate(0)}76%{transform:translate(-2px, 0) rotate(0)}78%{transform:translate(0px, 0) rotate(0)}80%{transform:translate(1px, 0) rotate(0)}82%{transform:translate(3px, 0) rotate(0)}84%{transform:translate(-7px, 0) rotate(0)}86%{transform:translate(7px, 0) rotate(0)}88%{transform:translate(10px, 0) rotate(0)}90%{transform:translate(6px, 0) rotate(0)}92%{transform:translate(9px, 0) rotate(0)}94%{transform:translate(10px, 0) rotate(0)}96%{transform:translate(-3px, 0) rotate(0)}98%{transform:translate(0px, 0) rotate(0)}0%,100%{transform:translate(0, 0) rotate(0)}} .shake-horizontal{animation-name:shake-horizontal;animation-duration:100ms;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+      .shake{transform-origin:center center}@keyframes shake{2%{transform:translate(-1.5px, .5px) rotate(.5deg)}4%{transform:translate(.5px, -1.5px) rotate(.5deg)}6%{transform:translate(-.5px, .5px) rotate(1.5deg)}8%{transform:translate(-.5px, -1.5px) rotate(1.5deg)}10%{transform:translate(-.5px, 1.5px) rotate(.5deg)}12%{transform:translate(2.5px, -1.5px) rotate(-.5deg)}14%{transform:translate(1.5px, .5px) rotate(-.5deg)}16%{transform:translate(1.5px, -1.5px) rotate(.5deg)}18%{transform:translate(2.5px, -.5px) rotate(.5deg)}20%{transform:translate(-.5px, 1.5px) rotate(.5deg)}22%{transform:translate(-.5px, -.5px) rotate(.5deg)}24%{transform:translate(2.5px, -1.5px) rotate(1.5deg)}26%{transform:translate(-.5px, 2.5px) rotate(-.5deg)}28%{transform:translate(2.5px, -1.5px) rotate(.5deg)}30%{transform:translate(-1.5px, -.5px) rotate(-.5deg)}32%{transform:translate(.5px, 1.5px) rotate(-.5deg)}34%{transform:translate(2.5px, .5px) rotate(.5deg)}36%{transform:translate(1.5px, -1.5px) rotate(.5deg)}38%{transform:translate(2.5px, 2.5px) rotate(.5deg)}40%{transform:translate(-.5px, -.5px) rotate(.5deg)}42%{transform:translate(2.5px, -1.5px) rotate(.5deg)}44%{transform:translate(1.5px, -.5px) rotate(1.5deg)}46%{transform:translate(.5px, 2.5px) rotate(.5deg)}48%{transform:translate(.5px, 1.5px) rotate(-.5deg)}50%{transform:translate(-1.5px, -.5px) rotate(-.5deg)}52%{transform:translate(.5px, 1.5px) rotate(-.5deg)}54%{transform:translate(-.5px, .5px) rotate(-.5deg)}56%{transform:translate(1.5px, -.5px) rotate(.5deg)}58%{transform:translate(.5px, 2.5px) rotate(1.5deg)}60%{transform:translate(-.5px, 1.5px) rotate(-.5deg)}62%{transform:translate(2.5px, .5px) rotate(1.5deg)}64%{transform:translate(-.5px, 2.5px) rotate(.5deg)}66%{transform:translate(.5px, -.5px) rotate(-.5deg)}68%{transform:translate(.5px, -.5px) rotate(-.5deg)}70%{transform:translate(-1.5px, 2.5px) rotate(1.5deg)}72%{transform:translate(-.5px, 1.5px) rotate(1.5deg)}74%{transform:translate(-.5px, 2.5px) rotate(1.5deg)}76%{transform:translate(2.5px, .5px) rotate(-.5deg)}78%{transform:translate(2.5px, 1.5px) rotate(1.5deg)}80%{transform:translate(-1.5px, -.5px) rotate(-.5deg)}82%{transform:translate(2.5px, -1.5px) rotate(1.5deg)}84%{transform:translate(-1.5px, .5px) rotate(-.5deg)}86%{transform:translate(2.5px, -1.5px) rotate(.5deg)}88%{transform:translate(1.5px, -.5px) rotate(.5deg)}90%{transform:translate(2.5px, 1.5px) rotate(.5deg)}92%{transform:translate(-.5px, -1.5px) rotate(-.5deg)}94%{transform:translate(-1.5px, 1.5px) rotate(.5deg)}96%{transform:translate(2.5px, 2.5px) rotate(1.5deg)}98%{transform:translate(1.5px, -1.5px) rotate(-.5deg)}0%,100%{transform:translate(0, 0) rotate(0)}}.shake{animation-name:shake;animation-duration:100ms;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+      .shake-freeze{animation-play-state:paused;animation-name:none}
+
+      /* overrides */
+      .gm-style-iw + div {
+        display: none;
+      }
+    </style>
+    <!--
+    <script>
+    function initUI() {
+      var pc = document.getElementById("carousel");
+      pc.addEventListener("click", function() {
+        pc.classList.toggle("thumbnail");
+      });
+    }
+    </script>-->
+  </head>
+  <body class="shake-horizontal shake-freeze">
+    <div id="map"></div>
+		<div id="carousel" class="thumbnail">
+      <!--<div class="photo lefthidden" style="background-image:url(img/locations/00000001.jpg)"></div>
+      <div class="photo left" style="background-image:url(img/locations/00000004.jpg)"></div>
+      <div class="photo center" style="background-image:url(img/locations/00000002.jpg)"></div>
+      <div class="photo right" style="background-image:url(img/locations/00000003.jpg)"></div>
+      <div class="photo righthidden" style="background-image:url(img/locations/00000005.jpg)"></div>-->
+    </div>
+    <!-- reciclar cuando haga falta
+		<svg width="200" height="200" viewbox="0 0 68 68" class="guessmarker">
+			<path d="m 36.658574,1.7735772 c 0,0 -22.725327,-1.88556986 -33.1865855,24.6668938 C -4.9444985,47.802961 18.606671,65.61062 38.405003,64.28564 52.109881,63.36846 68.865562,44.305621 62.553743,27.701871 55.9163,10.241537 42.385414,7.3325676 32.024242,7.7481876" />
+		</svg>-->
+    <div id="timeleftbar" class="hidden"><div class="bar"></div></div>
+    <span id="timeleft" class="hidden">4:00</span>
+    <script src="js/utils.js"></script>
+    <script src="js/gmaps/game.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn8-1Fo2BSyDP_ahw8vNsATM9GnWcXD-Q&callback=game.start&region=ES"></script>
+  </body>
+</html>

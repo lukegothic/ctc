@@ -38,6 +38,7 @@ Math.dice = function(num, sides) {
         return Object.keys(this).length;
     }
 }));
+/*
 !Object.prototype.forEach && (Object.defineProperty(Object.prototype, "forEach", {
 	value: function(fn, ctx) {
 		if (fn !== undefined && typeof fn === "function") {
@@ -49,6 +50,7 @@ Math.dice = function(num, sides) {
 		}
 	}
 }));
+*/
 !Object.prototype.watch && (Object.defineProperty(Object.prototype, "watch", {
 	enumerable: false,
 	configurable: true,
@@ -119,10 +121,24 @@ Math.dice = function(num, sides) {
     }
 });
 // Public functions
-if (!window.LK) window.LK = {};
+if (!window.luke) window.luke = {};
+luke.ajax = function(url, callback, data, x) {
+	try {
+		x = new(window.XMLHttpRequest || ActiveXObject)("MSXML2.XMLHTTP.3.0");
+		x.open(data ? "POST" : "GET", url, 1);
+		x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+		x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		x.onreadystatechange = function () {
+			x.readyState > 3 && callback && callback(x.responseText, x);
+		};
+		x.send(data)
+	} catch (e) {
+		window.console && console.log(e);
+	}
+};
 // HTML Functions
-if (!window.LK.HTML) window.LK.HTML = {};
-LK.HTML.getLinks = function(input, pattern, excludes) {
+if (!window.luke.html) window.luke.html = {};
+luke.html.getLinks = function(input, pattern, excludes) {
     // normalizar entrada
     if (!pattern || Array.isArray(pattern)) {
         excludes = pattern;
