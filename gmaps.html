@@ -3,10 +3,8 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>¿Conoces tu Ciudad?</title>
+    <title>¿Conoces tu ciudad?</title>
     <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
       #map {
         height: 100%;
       }
@@ -166,8 +164,12 @@
       /* fotos encontradas */
 			.guessmarker {
 				position: absolute;
-				bottom: 29px;
-				right: 15px;
+				bottom: 0;
+				right: 0;
+        z-index: 6;
+        pointer-events: none;
+        width: 100%;
+        height: auto;
 			}
 			.guessmarker path {
 				fill:none;
@@ -179,11 +181,11 @@
 				stroke-opacity:1;
 				stroke-dasharray: 194;
 				stroke-dashoffset: 194;
-			}
-			.guessmarker.animate path {
-				animation: write1 1s 1 ease-out;
-			}
-			@keyframes write1 {
+		   }
+       #carousel .photo.central.found + .guessmarker path {
+         animation: write 500ms 1 ease-out forwards;
+       }
+			@keyframes write {
 				0% {
 					stroke-dashoffset: 194;
 				}
@@ -191,7 +193,6 @@
 					stroke-dashoffset: 0;
 				}
 			}
-      /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
         margin: 0;
@@ -204,9 +205,11 @@
 
       /* overrides google maps api */
 			/* ocultar boton cerrar del infowindow */
+      /*
       .gm-style-iw + div {
         display: none;
       }
+      */
     </style>
     <!--
     <script>
@@ -224,6 +227,9 @@
       <!--<div class="photo lefthidden" style="background-image:url(img/locations/00000001.jpg)"></div>-->
       <div class="photo left"></div>
       <div class="photo central"></div>
+      <svg viewbox="0 0 68 68" class="guessmarker">
+  			<path d="m 36.658574,1.7735772 c 0,0 -22.725327,-1.88556986 -33.1865855,24.6668938 C -4.9444985,47.802961 18.606671,65.61062 38.405003,64.28564 52.109881,63.36846 68.865562,44.305621 62.553743,27.701871 55.9163,10.241537 42.385414,7.3325676 32.024242,7.7481876" />
+  		</svg>
       <div class="photo right"></div>
       <!--<div class="photo righthidden" style="background-image:url(img/locations/00000005.jpg)"></div>-->
     </div>

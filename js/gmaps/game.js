@@ -6,7 +6,7 @@
     var locationsToGuess = 5;
 		var failpenalty = 10000;
     // VARS
-    var locations, map, timeleft, ui;
+    var locations, map, timeleft, ui, infowindow;
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 42.81577003943018, lng: -1.6500215999999455},
@@ -101,7 +101,7 @@
         }, 250);
         */
       });
-      map.data.addGeoJson(locations);
+      map.data.addGeoJson(locations, { "idPropertyName": "id" });
       map.data.setStyle({
         fillColor: 'transparent',
         strokeColor: "transparent",
@@ -109,23 +109,39 @@
       });
       // Si hacemos clic en una feature comprobamos que sea la correcta
       map.data.addListener('click', function(event) {
-        console.log(event);
-        // opcional al descubrir -- eliminar del mapa
+        // opcional al descubrir -- eliminar del mapa si no se va a mostrar, o mostrarla
         if (!locations.features[0].properties.found) {
           if (event.feature.getProperty("id") === locations.features[0].properties.id) {
               locations.features[0].properties.found = true;
               //map.data.overrideStyle(event.feature, {fillColor: 'red'});
-              var infowindow = new google.maps.InfoWindow({
-                content: locations.features[0].properties.name,
-                position: event.latLng
-              });
-              infowindow.open(map);
+							//showCurrentPlaceName(event.latLng);
+							showCurrentPlace();
+							ui.centralphoto.classList.add("found");
+							if (locations.features.every(function(location) { return location.found; })) {
+								end(true);
+							}
           } else {
             fail();
           }
-        }
+        } else {
+					//showCurrentPlaceName(event.latLng);
+				}
       });
     }
+		/*
+		function showCurrentPlaceName(position) {
+			if (!infowindow) {
+				infowindow = new google.maps.InfoWindow({
+					content: locations.features[0].properties.name,
+					position: position
+				});
+			} else {
+				infowindow.setContent(locations.features[0].properties.name);
+				infowindow.setPosition(position);
+			}
+			infowindow.open(map);
+		}
+		*/
     function updateTimer() {
       ui.remainingtimebar.style.width = ((timeleft * 100) / (timePerLocation * locationsToGuess)) + "%";
       var seconds = Math.round(timeleft / 1000);
@@ -134,6 +150,7 @@
 		function updatePhotos() {
 			ui.leftphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[locations.features.length - 1].properties.id.toString().padStart(8,"0"));
 			ui.centralphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+			locations.features[0].properties.found ? ui.centralphoto.classList.add("found") : ui.centralphoto.classList.remove("found");
 			ui.rightphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
 		}
     function initUI() {
@@ -173,24 +190,44 @@
 			timeleft -= time.delta;
 			if (timeleft <= 0) {
 				timeleft = 0;
-				end();
+				end(false);
 			}
     }
+		function showCurrentPlace() {
+			if (locations.features[0].properties.found) {
+				var feature = map.data.getFeatureById(locations.features[0].properties.id);
+				var bounds = new google.maps.LatLngBounds();
+				feature.getGeometry().forEachLatLng(function(latlng){
+		      bounds.extend(latlng);
+		    });
+				map.fitBounds(bounds);
+				if (!infowindow) {
+					infowindow = new google.maps.InfoWindow();
+				}
+				infowindow.setContent(locations.features[0].properties.name);
+				infowindow.setPosition(bounds.getCenter());
+				infowindow.open(map);
+			} else {
+				infowindow && infowindow.close();
+			}
+		}
 		function next() {
 			var first = locations.features.shift();
 			locations.features.push(first);
 			updatePhotos();
+			showCurrentPlace();
 		}
 		function prev() {
 			var last = locations.features.pop();
 			locations.features.unshift(last);
 			updatePhotos();
+			showCurrentPlace();
 		}
 		function zoom() {
 			ui.carousel.classList.toggle("thumbnail");
 		}
-    function end() {
-			console.log("end");
+    function end(winstate) {
+			console.log("end"+winstate);
 			ui.timeleftbar.classList.add("hidden");
 			ui.timeleft.classList.add("hidden");
 			// hide photos
@@ -204,11 +241,11 @@
     }
     function start() {
       luke.ajax("data/locations.json", function (data) {
-        // computar las localizaciones donde vamos a jugar
+        // obtener las localizaciones y seleccionar un subconjunto
         locations = JSON.parse(data);
         locations.features.shuffle();
         locations.features.splice(locationsToGuess);
-        timeleft = timePerLocation * locationsToGuess;
+        timeleft = (timePerLocation * locationsToGuess) + 1000; // damos margen de 1s
         initUI();
         initMap();
         gameLoop(0);
@@ -216,7 +253,7 @@
     }
 		var gameObj = {
       start: start,
-			// todo: eliminar estos metodos
+			// todo: eliminar estos metodos publicos
 			next: next,
 			prev: prev,
 			locations: function() {
