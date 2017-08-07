@@ -193,6 +193,7 @@
 			console.log("end");
 			ui.timeleftbar.classList.add("hidden");
 			ui.timeleft.classList.add("hidden");
+			// hide photos
     }
     function fail() {
 				timeleft = Math.max(timeleft - failpenalty, 0.0000001);
