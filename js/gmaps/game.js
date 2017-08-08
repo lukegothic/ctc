@@ -2,11 +2,16 @@
 (function(global) {
 	var game = (function() {
     // CONSTS
+		// TODO: no mostrar las que ya ha acertado
     var timePerLocation = 30000;
     var locationsToGuess = 5;
 		var failpenalty = 10000;
+		// scores
+		var scorePerLocation = 100;
+		var scoreCompletionBonus = 300;
+		var scoreTimeBonus = locationsToGuess * scorePerLocation;
     // VARS
-    var locations, map, timeleft, ui, infowindow;
+    var locations, map, timeleft, ui, infowindow, gameOver;
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 42.81577003943018, lng: -1.6500215999999455},
@@ -176,15 +181,17 @@
     }
     var stopMain, lastFrameTime = 0;
     function gameLoop(time) {
-      stopMain = window.requestAnimationFrame(gameLoop);
-      if (timeleft > 0) {
-        update({
-          time: time,
-          delta: time - lastFrameTime
-        });
-        updateTimer();
-      }
-      lastFrameTime = time;
+			if (!gameOver) {	// paramos el gameloop cuando el juego esta acabado
+	      stopMain = window.requestAnimationFrame(gameLoop);
+	      if (timeleft > 0) {
+	        update({
+	          time: time,
+	          delta: time - lastFrameTime
+	        });
+	        updateTimer();
+	      }
+	      lastFrameTime = time;
+			}
     }
     function update(time) {
 			timeleft -= time.delta;
@@ -226,11 +233,28 @@
 		function zoom() {
 			ui.carousel.classList.toggle("thumbnail");
 		}
+		function getLocationScore() {
+			return locations.features.reduce(function(sum, location) { return sum + (location.properties.found ? scorePerLocation : 0) }, 0);
+		}
+		function getCompletionBonus() {
+			return locations.features.every(function	(location) { return location.properties.found; }) ? scoreCompletionBonus : 0;
+		}
+		function getTimeBonus() {
+			return scoreTimeBonus * (Math.log(1.01 - (timeleft / (timePerLocation * locationsToGuess))) * -(locationsToGuess));
+		}
     function end(winstate) {
-			console.log("end"+winstate);
+			console.log("end",winstate);
+			gameOver = true;
 			ui.timeleftbar.classList.add("hidden");
 			ui.timeleft.classList.add("hidden");
-			// hide photos
+			ui.carousel.classList.remove("thumbnail");
+			ui.carousel.classList.add("hidden");
+			var score = getLocationScore() + getCompletionBonus() + getTimeBonus();
+			console.log(score);
+			// TODO: mostrar en el resumen el conocimiento de Pamplona (xx de 38)
+			// TODO: mostrar y resaltar sitios nuevos y los no averiguados en b/n
+			// TODO: mostrar estrellas (1 -> la mitad de los lugares (redondeo hacia arriba), 2 -> todos los lugares, 3 -> en menos de la mitad del tiempo)
+			// TODO: enviar puntuacion a DB y mostrar los mejores del dia (recuerda descartar puntuaciones meh)
     }
     function fail() {
 				timeleft = Math.max(timeleft - failpenalty, 0.0000001);
@@ -245,17 +269,19 @@
         locations = JSON.parse(data);
         locations.features.shuffle();
         locations.features.splice(locationsToGuess);
-        timeleft = (timePerLocation * locationsToGuess) + 1000; // damos margen de 1s
+        timeleft = (timePerLocation * locationsToGuess);
         initUI();
         initMap();
+				gameOver = false;
         gameLoop(0);
       });
     }
 		var gameObj = {
       start: start,
-			// todo: eliminar estos metodos publicos
+			// TODO: eliminar estos metodos publicos
 			next: next,
 			prev: prev,
+			end: end,
 			locations: function() {
 				return locations;
 			}

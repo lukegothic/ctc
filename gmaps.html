@@ -19,8 +19,8 @@
         -moz-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.75);
         box-shadow: 0 1px 2px 0px rgba(0,0,0,0.75);
         opacity: 1;
-        transition:all 250ms linear;
-        transition-delay: 250ms;
+        transition:all 0.2s linear;
+        transition-delay: 0.2s;
       }
       #timeleftbar .bar {
         height:2px;
@@ -54,7 +54,7 @@
         box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.75);
         min-width: 100px;
         text-align: center;
-        transition:all 350ms ease-in;
+        transition:all 0.3s ease-in;
       }
       #timeleft.hidden {
         transform: translateY(-50px);
@@ -66,16 +66,20 @@
         bottom: 40px;
         right: 25%;
         width: 50%;
-        transition:all 350ms ease-in;
+        transition:all 0.3s ease-in;
       }
-      .oscuridad {
-        height:100%;
-        width:100%;
-        position: absolute;
+      .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
         top: 0;
         left: 0;
+        opacity: 1;
+        visibility: visible;
         background: rgba(0, 0, 0, 0.75);
-        animation: fadeIn 350ms ease-in;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
       }
       @keyframes fadeIn {
         0% {
@@ -90,10 +94,9 @@
           opacity: 1;
         }
       }
-      #carousel.thumbnail + .oscuridad {
+      #carousel.thumbnail + .overlay {
         opacity: 0;
-        display: none;
-        pointer-events: none;
+        visibility: hidden;
       }
       #carousel .photo {
         width:100%;
@@ -104,7 +107,7 @@
 				box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
         background-size: cover;
         background-position: center;
-        transition: all 500ms;
+        transition: all 0.3s;
         position: absolute;
         bottom:0;
         box-sizing: border-box;
@@ -161,6 +164,65 @@
         z-index: 4;
         cursor: pointer;
       }
+			#carousel.hidden {
+				width: 0;
+			}
+			#carousel.hidden .photo {
+				border: 0;
+			}
+      /* game results panel */
+      #gameresults {
+        /* modal */
+        /* TODO: REFINAR EFECTO ETC https://tympanus.net/Development/ModalWindowEffects/ */
+        position: fixed;
+      	top: 50%;
+      	left: 50%;
+      	width: 50%;
+        max-width: 630px;
+        min-width: 320px;
+      	height: auto;
+      	visibility: hidden;
+      	-webkit-backface-visibility: hidden;
+      	-moz-backface-visibility: hidden;
+      	backface-visibility: hidden;
+      	-webkit-transform: translateX(-50%) translateY(-50%);
+      	-moz-transform: translateX(-50%) translateY(-50%);
+      	-ms-transform: translateX(-50%) translateY(-50%);
+      	transform: translateX(-50%) translateY(-50%);
+      }
+      #gameresults .content {
+        /* diseno */
+        color: #fff;
+        background: #e74c3c;
+        position: relative;
+        border-radius: 3px;
+        margin: 0 auto;
+        border: 6px ridge #fff;
+        /* effect 1 */
+        -webkit-transform: scale(0.7);
+        -moz-transform: scale(0.7);
+        -ms-transform: scale(0.7);
+        transform: scale(0.7);
+        opacity: 0;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+        /* TODO: mostrar ¡tiempo! en el visor */
+        transition-delay: 1s;
+      }
+      #carousel.hidden ~ #gameresults {
+        /* show dialog */
+        visibility: visible;
+      }
+      #carousel.hidden ~ #gameresults .content {
+        /* show effect */
+        -webkit-transform: scale(1);
+      	-moz-transform: scale(1);
+      	-ms-transform: scale(1);
+      	transform: scale(1);
+      	opacity: 1;
+      }
+
       /* fotos encontradas */
 			.guessmarker {
 				position: absolute;
@@ -205,21 +267,10 @@
 
       /* overrides google maps api */
 			/* ocultar boton cerrar del infowindow */
-      /*
       .gm-style-iw + div {
         display: none;
       }
-      */
     </style>
-    <!--
-    <script>
-    function initUI() {
-      var pc = document.getElementById("carousel");
-      pc.addEventListener("click", function() {
-        pc.classList.toggle("thumbnail");
-      });
-    }
-    </script>-->
   </head>
   <body class="shake-horizontal shake-freeze">
     <div id="map"></div>
@@ -233,7 +284,8 @@
       <div class="photo right"></div>
       <!--<div class="photo righthidden" style="background-image:url(img/locations/00000005.jpg)"></div>-->
     </div>
-    <div class="oscuridad"></div>
+    <div class="overlay"></div>
+    <div id="gameresults"><div class="content"><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p></div></div>
     <!-- reciclar cuando haga falta
 		<svg width="200" height="200" viewbox="0 0 68 68" class="guessmarker">
 			<path d="m 36.658574,1.7735772 c 0,0 -22.725327,-1.88556986 -33.1865855,24.6668938 C -4.9444985,47.802961 18.606671,65.61062 38.405003,64.28564 52.109881,63.36846 68.865562,44.305621 62.553743,27.701871 55.9163,10.241537 42.385414,7.3325676 32.024242,7.7481876" />
