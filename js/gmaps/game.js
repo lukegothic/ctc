@@ -3,6 +3,7 @@
 	var game = (function() {
     // CONSTS
 		// TODO: no mostrar las que ya ha acertado
+		// TODO: contemplar otros lugares (pamplona.ctc.com...)
     var timePerLocation = 30000;
     var locationsToGuess = 5;
 		var failpenalty = 10000;
