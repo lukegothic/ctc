@@ -2,8 +2,23 @@
 (function(global) {
 	var game = (function() {
     // CONSTS
-		// TODO: no mostrar las que ya ha acertado
-		// TODO: contemplar otros lugares (pamplona.ctc.com...)
+		var localidades = [{
+			"id": 31201,
+			"names": ["Pamplona", "Iruña"],
+			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"zoom": 14
+		},{
+			"id": 45678,
+			"names": ["Bilbao"],
+			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"zoom": 14
+		},{
+			"id": 12456,
+			"names": ["San Sebastian", "Donostia", "Donosti"],
+			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"zoom": 14
+		}];
+		var localidadPorDefecto = localidades[0];
     var timePerLocation = 30000;
     var locationsToGuess = 5;
 		var failpenalty = 10000;
@@ -12,13 +27,14 @@
 		var scoreCompletionBonus = 300;
 		var scoreTimeBonus = locationsToGuess * scorePerLocation;
     // VARS
-    var locations, map, timeleft, ui, infowindow, gameOver;
+    var localidad, locations, map, timeleft, ui, infowindow, gameOver, mapClick, featureClick;
+		// Inicializar GMap
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 42.81577003943018, lng: -1.6500215999999455},
+        center: localidad.center,
         maxZoom: 20,
-        minZoom: 14,
-        zoom: 14,
+        minZoom: localidad.zoom,
+        zoom: localidad.zoom,
         mapTypeId: google.maps.MapTypeId.HYBRID,
         labels: true,
         zoomControl: false,
@@ -88,9 +104,10 @@
             }
           ]
       });
+			// Establecer modo perspectiva
       map.setTilt(45);
-      // Si hacemos clic en el mapa es un fallo si la feature no esta encontrada
-      map.addListener('click', function(e) {
+      // Fallar al hacer clic en el mapa
+      mapClick = map.addListener('click', function(e) {
         if (!locations.features[0].properties.found) {
           fail();
         }
@@ -107,26 +124,32 @@
         }, 250);
         */
       });
+			// Anadir los lugares de juego al mapa
       map.data.addGeoJson(locations, { "idPropertyName": "id" });
+			// Ocultar los lugares de juego
       map.data.setStyle({
         fillColor: 'transparent',
         strokeColor: "transparent",
         cursor: "url('https://maps.gstatic.com/mapfiles/openhand_8_8.cur') 8 8, default;"
       });
-      // Si hacemos clic en una feature comprobamos que sea la correcta
-      map.data.addListener('click', function(event) {
-        // opcional al descubrir -- eliminar del mapa si no se va a mostrar, o mostrarla
+			// TODO: MEJORA: CARGAR SOLO LA FEATURE CON LA QUE SE ESTA JUGANDO? Simplificaria esta funcion
+      // Comprobar cuando hacemos clic en una feature si es la misma que esta activa
+      featureClick = map.data.addListener('click', function(event) {
         if (!locations.features[0].properties.found) {
           if (event.feature.getProperty("id") === locations.features[0].properties.id) {
-              locations.features[0].properties.found = true;
-              //map.data.overrideStyle(event.feature, {fillColor: 'red'});
-							//showCurrentPlaceName(event.latLng);
-							showCurrentPlace();
-							ui.centralphoto.classList.add("found");
-							if (locations.features.every(function(location) { return location.found; })) {
-								end(true);
-							}
+						// Establecemos que se ha encontrado la feature
+            locations.features[0].properties.found = true;
+						event.feature.setProperty("found", true);
+						// Mostrar la feature descubierta
+            map.data.overrideStyle(event.feature, { fillColor: "#0000ff", strokeColor: "#0000ff" });
+						showCurrentPlace();
+						showPlaceFoundState();
+						// Si se han averiguado todos los lugares terminamos el juego
+						if (locations.features.every(function(location) { return location.found; })) {
+							end(true);
+						}
           } else {
+						// Si se ha hecho clic en un lugar que no corresponde
             fail();
           }
         } else {
@@ -134,38 +157,33 @@
 				}
       });
     }
-		/*
-		function showCurrentPlaceName(position) {
-			if (!infowindow) {
-				infowindow = new google.maps.InfoWindow({
-					content: locations.features[0].properties.name,
-					position: position
-				});
-			} else {
-				infowindow.setContent(locations.features[0].properties.name);
-				infowindow.setPosition(position);
-			}
-			infowindow.open(map);
-		}
-		*/
+		// Actualizar contador de tiempo
     function updateTimer() {
       ui.remainingtimebar.style.width = ((timeleft * 100) / (timePerLocation * locationsToGuess)) + "%";
       var seconds = Math.round(timeleft / 1000);
       ui.timeleft.innerHTML = "{0}{1}".format((seconds >= 60 ? Math.floor(seconds / 60) + ":" : ""), Math.ceil(seconds % 60).toString().padStart((seconds >= 60 ? 2 : 1), "0"));
     }
+		function showPlaceFoundState() {
+			locations.features[0].properties.found ? ui.centralphoto.classList.add("found") : ui.centralphoto.classList.remove("found");
+		}
+		// Actualizar las fotos
 		function updatePhotos() {
 			ui.leftphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[locations.features.length - 1].properties.id.toString().padStart(8,"0"));
 			ui.centralphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
-			locations.features[0].properties.found ? ui.centralphoto.classList.add("found") : ui.centralphoto.classList.remove("found");
 			ui.rightphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
+			showPlaceFoundState();
 		}
+		// Inicializar interfaz
     function initUI() {
       ui = {};
+			// Carrousel de fotos
       ui.carousel = document.getElementById("carousel");
-      //var photo = docment.createElement("div");
-      //photo.classList.add("photo");
-      //photo.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
-      //ui.carousel.appendChild(photo);
+			/*
+			var photo = docment.createElement("div");
+      photo.classList.add("photo");
+      photo.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+      ui.carousel.appendChild(photo);
+			*/
 			ui.leftphoto = ui.carousel.querySelector(".photo.left");
 			ui.leftphoto.addEventListener("click", prev);
 			ui.centralphoto = ui.carousel.querySelector(".photo.central");
@@ -173,13 +191,16 @@
 			ui.rightphoto = ui.carousel.querySelector(".photo.right");
 			ui.rightphoto.addEventListener("click", next);
 			updatePhotos();
+			// Contador de tiempo
 			ui.timeleftbar = document.getElementById("timeleftbar");
 			ui.remainingtimebar = ui.timeleftbar.querySelector(".bar");
 			ui.timeleft = document.getElementById("timeleft");
       ui.timeleftbar.classList.remove("hidden");
       ui.timeleft.classList.remove("hidden");
       updateTimer();
+			// TODO: Panel de resultados
     }
+		// Game loop
     var stopMain, lastFrameTime = 0;
     function gameLoop(time) {
 			if (!gameOver) {	// paramos el gameloop cuando el juego esta acabado
@@ -201,14 +222,22 @@
 				end(false);
 			}
     }
+		// Funcion auxiliar para calcular los bounds de una feature de la capa Data
+		function getFeatureBounds(feature) {
+			var bounds = new google.maps.LatLngBounds();
+			feature.getGeometry().forEachLatLng(function(latlng){
+				bounds.extend(latlng);
+			});
+			return bounds;
+		}
+		// Mostrar el lugar actual (solo si esta descubierto)
 		function showCurrentPlace() {
 			if (locations.features[0].properties.found) {
 				var feature = map.data.getFeatureById(locations.features[0].properties.id);
-				var bounds = new google.maps.LatLngBounds();
-				feature.getGeometry().forEachLatLng(function(latlng){
-		      bounds.extend(latlng);
-		    });
+				// Hacer zoom a la posicion del lugar
+				var bounds = getFeatureBounds(feature);
 				map.fitBounds(bounds);
+				// Mostrar cartelito con el nombre del lugar
 				if (!infowindow) {
 					infowindow = new google.maps.InfoWindow();
 				}
@@ -219,70 +248,110 @@
 				infowindow && infowindow.close();
 			}
 		}
+		// Ir al lugar anterior
 		function next() {
 			var first = locations.features.shift();
 			locations.features.push(first);
 			updatePhotos();
 			showCurrentPlace();
 		}
+		// Ir al siguiente lugar
 		function prev() {
 			var last = locations.features.pop();
 			locations.features.unshift(last);
 			updatePhotos();
 			showCurrentPlace();
 		}
+		// Alternar entre foto a tamano completo y foto en miniatura
 		function zoom() {
 			ui.carousel.classList.toggle("thumbnail");
 		}
+		// Calcular score por lugar
 		function getLocationScore() {
 			return locations.features.reduce(function(sum, location) { return sum + (location.properties.found ? scorePerLocation : 0) }, 0);
 		}
+		// Calcular score por adivinar todos
 		function getCompletionBonus() {
 			return locations.features.every(function	(location) { return location.properties.found; }) ? scoreCompletionBonus : 0;
 		}
+		// Calcular score por bonus de tiempo
 		function getTimeBonus() {
 			return scoreTimeBonus * (Math.log(1.01 - (timeleft / (timePerLocation * locationsToGuess))) * -(locationsToGuess));
 		}
+		// Calcular score total
+		function getScore() {
+			return getLocationScore() + getCompletionBonus() + getTimeBonus();
+		}
     function end(winstate) {
-			console.log("end",winstate);
+			// Establecer juego acabado
 			gameOver = true;
+			// Eliminar control clic del mapa y features
+			mapClick.remove();
+			featureClick.remove();
+			// Calcular bounds de los lugares encotnrados
+			var bounds = new google.maps.LatLngBounds();
+			map.data.forEach(function(f) {
+				if (f.getProperty("found")) {
+					bounds.union(getFeatureBounds(f));
+				}
+			});
+			!bounds.isEmpty() && map.fitBounds(bounds);
+			// Esconder interfaz de juego (y mostrar la interfaz de resumen)
 			ui.timeleftbar.classList.add("hidden");
 			ui.timeleft.classList.add("hidden");
 			ui.carousel.classList.remove("thumbnail");
 			ui.carousel.classList.add("hidden");
-			var score = getLocationScore() + getCompletionBonus() + getTimeBonus();
-			console.log(score);
+			// Calcular puntuacion
+			var score = getScore();
 			// TODO: mostrar en el resumen el conocimiento de Pamplona (xx de 38)
 			// TODO: mostrar y resaltar sitios nuevos y los no averiguados en b/n
 			// TODO: mostrar estrellas (1 -> la mitad de los lugares (redondeo hacia arriba), 2 -> todos los lugares, 3 -> en menos de la mitad del tiempo)
 			// TODO: enviar puntuacion a DB y mostrar los mejores del dia (recuerda descartar puntuaciones meh)
+			// TODO: {time:xxxx,locations:[1:true,2:false,3:true,4:false,5:true],score:xxxx}
     }
+		// Procesar fallo
     function fail() {
-				timeleft = Math.max(timeleft - failpenalty, 0.0000001);
-        document.body.classList.remove("shake-freeze");
-        window.setTimeout(function() {
-          document.body.classList.add("shake-freeze");
-        }, 300);
+			// Restar al tiempo restante n, minimo 0
+			timeleft = Math.max(timeleft - failpenalty, 0.0000001);
+			// Agitar la pantalla
+      document.body.classList.remove("shake-freeze");
+      window.setTimeout(function() {
+        document.body.classList.add("shake-freeze");
+      }, 300);
     }
+		// Inicializar el juego, se llama en el momento en el que se carga la biblioteca GMaps
     function start() {
-      luke.ajax("data/locations.json", function (data) {
-        // obtener las localizaciones y seleccionar un subconjunto
+			// Obtener la localidad donde se va a lugar
+			localidad = localidades.find(function(l) { return l.names.indexOf(luke.html.queryString("localidad")) !== -1; }) || localidadPorDefecto;
+			// Obtener los lugares de la localidad
+      luke.ajax("data/{0}/locations.json".format(localidad.id), function (data) {
         locations = JSON.parse(data);
+				// Aleatorizar
+				// TODO: no mostrar las que ya ha acertado
         locations.features.shuffle();
+				// Quedarse con las n primeras
         locations.features.splice(locationsToGuess);
+				// Calcular tiempo de juego (en ms)
         timeleft = (timePerLocation * locationsToGuess);
+				// Inicializar interfaz
         initUI();
+				// inicializar mapa
         initMap();
+				// Iniciar loop
+				// TODO: Iniciar el loop al cerrar por primera vez las fotos?
 				gameOver = false;
         gameLoop(0);
       });
     }
 		var gameObj = {
       start: start,
-			// TODO: eliminar estos metodos publicos
+			// TODO: eliminar estos metodos publicos (son usados para depurar)
 			next: next,
 			prev: prev,
 			end: end,
+			map: function() {
+				return map;
+			},
 			locations: function() {
 				return locations;
 			}

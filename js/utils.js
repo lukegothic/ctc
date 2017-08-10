@@ -156,3 +156,11 @@ luke.html.getLinks = function(input, pattern, excludes) {
     }
     return links;
 };
+luke.html.queryString = function(parameter) {
+	if (location.search) {
+		var params = JSON.parse('{"' + decodeURI(location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+		return parameter ? (params[parameter] || null) : params;
+	} else {
+		return null;
+	}
+};
