@@ -270,6 +270,34 @@
       .gm-style-iw + div {
         display: none;
       }
+      /* results */
+      .row {
+        text-align: center;
+      }
+      .star {
+        opacity: 0.0;
+        filter: grayscale(100%);
+        width: 20%;
+        transition: opacity 0.3s, filter 0.3s;
+      }
+      .star.active {
+        opacity: 1;
+        filter: none;
+      }
+      #star1 {
+        transition-delay: 1.3s;
+      }
+      #star2 {
+        transition-delay: 1.6s;
+      }
+      #star3 {
+        transition-delay: 1.9s;
+      }
+      #score {
+        font-family: fantasy;
+        font-size: 3em;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body class="shake-horizontal shake-freeze">
@@ -285,15 +313,35 @@
       <!--<div class="photo righthidden" style="background-image:url(img/locations/00000005.jpg)"></div>-->
     </div>
     <div class="overlay"></div>
-    <div id="gameresults"><div class="content"><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p><p>A B C D E F G H I</p></div></div>
-    <!-- reciclar cuando haga falta
-		<svg width="200" height="200" viewbox="0 0 68 68" class="guessmarker">
-			<path d="m 36.658574,1.7735772 c 0,0 -22.725327,-1.88556986 -33.1865855,24.6668938 C -4.9444985,47.802961 18.606671,65.61062 38.405003,64.28564 52.109881,63.36846 68.865562,44.305621 62.553743,27.701871 55.9163,10.241537 42.385414,7.3325676 32.024242,7.7481876" />
-		</svg>-->
+    <div id="gameresults">
+			<div class="content">
+        <div class="row stars">
+		      <img class="star" src="img/star.svg" id="star1" /><img class="star" src="img/star.svg" id="star2" /><img class="star" src="img/star.svg" id="star3" />
+        </div>
+        <div class="row scores">
+          <span id="score">0</span>
+        </div>
+        <div class="row locations">
+          <div class="location" id="location1"></div>
+          <div class="location" id="location2"></div>
+          <div class="location" id="location3"></div>
+          <div class="location" id="location4"></div>
+        </div>
+        <div class="row collection">
+          <img src="xxx" alt="" /><span id="collectionName">Colecci&oacute;n</span><progress id="collectionprogress"></progress>
+        </div>
+        <div class="row buttons">
+          <button id="newGame">Nueva partida</button>
+          <a>Like FB</a>
+          <a>Yo</a>
+        </div>
+			</div>
+		</div>
     <div id="timeleftbar" class="hidden"><div class="bar"></div></div>
-    <span id="timeleft" class="hidden">4:00</span>
+    <span id="timeleft" class="hidden">0:00</span>
     <script src="js/utils.js"></script>
     <script src="js/gmaps/game.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn8-1Fo2BSyDP_ahw8vNsATM9GnWcXD-Q&callback=game.start&region=ES"></script>
+    <script src="js/vendor/countUp.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn8-1Fo2BSyDP_ahw8vNsATM9GnWcXD-Q&callback=game.setup&region=ES"></script>
   </body>
 </html>

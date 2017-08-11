@@ -27,7 +27,7 @@
 		var scoreCompletionBonus = 300;
 		var scoreTimeBonus = locationsToGuess * scorePerLocation;
     // VARS
-    var localidad, locations, map, timeleft, ui, infowindow, gameOver, mapClick, featureClick;
+    var localidad, allLocations, locations, map, timeleft, ui, infowindow, gameOver, mapClick, featureClick;
 		// Inicializar GMap
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
@@ -124,14 +124,13 @@
         }, 250);
         */
       });
-			// Anadir los lugares de juego al mapa
-      map.data.addGeoJson(locations, { "idPropertyName": "id" });
 			// Ocultar los lugares de juego
+			/*
       map.data.setStyle({
         fillColor: 'transparent',
         strokeColor: "transparent",
         cursor: "url('https://maps.gstatic.com/mapfiles/openhand_8_8.cur') 8 8, default;"
-      });
+      });*/
 			// TODO: MEJORA: CARGAR SOLO LA FEATURE CON LA QUE SE ESTA JUGANDO? Simplificaria esta funcion
       // Comprobar cuando hacemos clic en una feature si es la misma que esta activa
       featureClick = map.data.addListener('click', function(event) {
@@ -145,7 +144,7 @@
 						showCurrentPlace();
 						showPlaceFoundState();
 						// Si se han averiguado todos los lugares terminamos el juego
-						if (locations.features.every(function(location) { return location.found; })) {
+						if (locations.features.every(function(location) { return location.properties.found; })) {
 							end(true);
 						}
           } else {
@@ -157,6 +156,15 @@
 				}
       });
     }
+		// Agrega las locations al mapa
+		function updateMap() {
+			// Limpiar capa
+			map.data.forEach(function(feature) {
+    		map.data.remove(feature);
+			});
+			// Anadir los lugares de juego al mapa
+      map.data.addGeoJson(locations, { "idPropertyName": "id" });
+		}
 		// Actualizar contador de tiempo
     function updateTimer() {
       ui.remainingtimebar.style.width = ((timeleft * 100) / (timePerLocation * locationsToGuess)) + "%";
@@ -190,16 +198,33 @@
 			ui.centralphoto.addEventListener("click", zoom);
 			ui.rightphoto = ui.carousel.querySelector(".photo.right");
 			ui.rightphoto.addEventListener("click", next);
-			updatePhotos();
 			// Contador de tiempo
 			ui.timeleftbar = document.getElementById("timeleftbar");
 			ui.remainingtimebar = ui.timeleftbar.querySelector(".bar");
 			ui.timeleft = document.getElementById("timeleft");
-      ui.timeleftbar.classList.remove("hidden");
-      ui.timeleft.classList.remove("hidden");
-      updateTimer();
-			// TODO: Panel de resultados
+			// Panel de resultados
+			ui.results = {};
+			ui.results.stars = {};
+			ui.results.stars.one = document.getElementById("star1");
+			ui.results.stars.two = document.getElementById("star2");
+			ui.results.stars.three = document.getElementById("star3");
+			ui.results.score = document.getElementById("score");
+			ui.results.newGame = document.getElementById("newGame");
+			ui.results.newGame.addEventListener("click", start);
     }
+		// Muestra UI
+		function showUI() {
+			ui.timeleftbar.classList.remove("hidden");
+			ui.timeleft.classList.remove("hidden");
+			ui.carousel.classList.remove("hidden");
+		}
+		// Oculta UI
+		function hideUI() {
+			ui.timeleftbar.classList.add("hidden");
+			ui.timeleft.classList.add("hidden");
+			ui.carousel.classList.add("hidden");
+			ui.carousel.classList.remove("thumbnail");
+		}
 		// Game loop
     var stopMain, lastFrameTime = 0;
     function gameLoop(time) {
@@ -266,23 +291,12 @@
 		function zoom() {
 			ui.carousel.classList.toggle("thumbnail");
 		}
-		// Calcular score por lugar
-		function getLocationScore() {
-			return locations.features.reduce(function(sum, location) { return sum + (location.properties.found ? scorePerLocation : 0) }, 0);
-		}
-		// Calcular score por adivinar todos
-		function getCompletionBonus() {
-			return locations.features.every(function	(location) { return location.properties.found; }) ? scoreCompletionBonus : 0;
-		}
 		// Calcular score por bonus de tiempo
-		function getTimeBonus() {
-			return scoreTimeBonus * (Math.log(1.01 - (timeleft / (timePerLocation * locationsToGuess))) * -(locationsToGuess));
-		}
-		// Calcular score total
-		function getScore() {
-			return getLocationScore() + getCompletionBonus() + getTimeBonus();
+		function getTimeBonus(remainingTimeRatio) {
+			return scoreTimeBonus * (Math.log(1.01 - remainingTimeRatio) * -(locationsToGuess));
 		}
     function end(winstate) {
+			// TODO: Manejar winstate -> Mensaje de tiempo o terminado
 			// Establecer juego acabado
 			gameOver = true;
 			// Eliminar control clic del mapa y features
@@ -297,17 +311,33 @@
 			});
 			!bounds.isEmpty() && map.fitBounds(bounds);
 			// Esconder interfaz de juego (y mostrar la interfaz de resumen)
-			ui.timeleftbar.classList.add("hidden");
-			ui.timeleft.classList.add("hidden");
-			ui.carousel.classList.remove("thumbnail");
-			ui.carousel.classList.add("hidden");
-			// Calcular puntuacion
-			var score = getScore();
-			// TODO: mostrar en el resumen el conocimiento de Pamplona (xx de 38)
+			hideUI();
+			// Estrellas (1 -> la mitad de los lugares (redondeo hacia arriba), 2 -> todos los lugares, 3 -> en menos de la mitad del tiempo)
+			var remainingTimeRatio = timeleft / (timePerLocation * locationsToGuess);
+			var foundLocationsCount = locations.features.filter(function(location) { return location.properties.found; }).length;
+			var allFound = foundLocationsCount === locationsToGuess;
+			var starRating = allFound ? (remainingTimeRatio > 0.5 ? 3 : 2) : (foundLocationsCount >= Math.ceil(locationsToGuess / 2) ? 1 : 0);
+			switch(starRating) {
+				case 3:
+					ui.results.stars.three.classList.add("active");
+				case 2:
+					ui.results.stars.two.classList.add("active");
+				case 1:
+					ui.results.stars.one.classList.add("active");
+				break;
+			}
+			// Puntuacion (por cada acierto + (bonus por acertar todas y bonus de tiempo))
+			var score = Math.round((foundLocationsCount * scorePerLocation) + (allFound ? (scoreCompletionBonus + getTimeBonus(remainingTimeRatio)) : 0));
+			// Contador
+			window.setTimeout(function() {
+				new CountUp(ui.results.score, 0, score, 0, 2.5).start();
+			}, 1000)
 			// TODO: mostrar y resaltar sitios nuevos y los no averiguados en b/n
-			// TODO: mostrar estrellas (1 -> la mitad de los lugares (redondeo hacia arriba), 2 -> todos los lugares, 3 -> en menos de la mitad del tiempo)
+
+			// TODO: mostrar en el resumen el conocimiento de Pamplona (xx de 38)
+
 			// TODO: enviar puntuacion a DB y mostrar los mejores del dia (recuerda descartar puntuaciones meh)
-			// TODO: {time:xxxx,locations:[1:true,2:false,3:true,4:false,5:true],score:xxxx}
+			// TODO: {time:xxxx,locations:[1:true,2:false,3:true,4:false,5:true],score:xxxx,localidad:xxxxx}
     }
 		// Procesar fallo
     function fail() {
@@ -320,32 +350,42 @@
       }, 300);
     }
 		// Inicializar el juego, se llama en el momento en el que se carga la biblioteca GMaps
-    function start() {
+		function setup() {
 			// Obtener la localidad donde se va a lugar
 			localidad = localidades.find(function(l) { return l.names.indexOf(luke.html.queryString("localidad")) !== -1; }) || localidadPorDefecto;
 			// Obtener los lugares de la localidad
       luke.ajax("data/{0}/locations.json".format(localidad.id), function (data) {
-        locations = JSON.parse(data);
-				// Aleatorizar
-				// TODO: no mostrar las que ya ha acertado
-        locations.features.shuffle();
-				// Quedarse con las n primeras
-        locations.features.splice(locationsToGuess);
-				// Calcular tiempo de juego (en ms)
-        timeleft = (timePerLocation * locationsToGuess);
+        allLocations = JSON.parse(data);
 				// Inicializar interfaz
-        initUI();
+				initUI();
 				// inicializar mapa
-        initMap();
-				// Iniciar loop
-				// TODO: Iniciar el loop al cerrar por primera vez las fotos?
-				gameOver = false;
-        gameLoop(0);
-      });
+				initMap();
+				start();
+			});
+		}
+    function start() {
+			// Aleatorizar
+			// TODO: no mostrar las que ya ha acertado
+      allLocations.features.shuffle();
+			// Quedarse con las n primeras
+      locations = JSON.parse(JSON.stringify({"type":"FeatureCollection","features": allLocations.features.slice(0, locationsToGuess) }));
+			// Actualizar
+			updateMap();
+			updatePhotos();
+			// Calcular tiempo de juego (en ms)
+      timeleft = (timePerLocation * locationsToGuess);
+      updateTimer();
+			// Mostrar interfaz
+			showUI();
+			// Iniciar loop
+			// TODO: Iniciar el loop al cerrar por primera vez las fotos?
+			gameOver = false;
+      gameLoop(0);
     }
 		var gameObj = {
-      start: start,
+			setup: setup,
 			// TODO: eliminar estos metodos publicos (son usados para depurar)
+			start: start,
 			next: next,
 			prev: prev,
 			end: end,
@@ -354,6 +394,12 @@
 			},
 			locations: function() {
 				return locations;
+			},
+			completar: function() {
+				locations.features.forEach(function(location) {
+					location.properties.found = true;
+				});
+				end(true);
 			}
 		};
 		return gameObj;
