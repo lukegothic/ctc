@@ -2,6 +2,8 @@ Results - locations
 Resulsts - enlace linekdin
 Errores de iPad
 Preload de imágenes
+Titulo y subtítulo
+Que funcione en modo fullscreen
 
 Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
 
