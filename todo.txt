@@ -1,11 +1,14 @@
-Game: Cool
-Game: More POIs
-Game: PCats simplificadas
-Game: scorescreen
-Game: swipe photos
-Game: clic photo center carousel?
-Game: click photo boing
-Col: UI + Cool
-Menu: UI + Cool
-GMC: Desktop UI
-Deploy: FR.es -> server
+Results - locations
+Resulsts - enlace linekdin
+Errores de iPad
+Preload de imágenes
+
+Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
+
+Iniciar contador cuando pulsa por primera vez la foto
+Carousel - rotacion y translacion de las fotos
+Diseño - tipografia
+Carousel - animacion boing
+Carousel - Contain en vez de cover en full
+¿ Cargar solo lugar actual ?
+Tabla de puntuaciones + DB
