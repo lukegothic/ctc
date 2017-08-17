@@ -62,6 +62,11 @@ h1,h2 {
   margin:0;
   text-shadow: 0 0 0.2em #000, 0 0 0.2em #000, 0 0 0.2em #000;
   color: #fff;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }
 h1 {
   top:10px;

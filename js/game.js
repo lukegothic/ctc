@@ -10,17 +10,17 @@
 		},{
 			"id": 48000,
 			"names": ["Bilbao", "Bilbo"],
-			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"center": {lat: 43.26288229341335, lng: -2.9340414415282856},
 			"zoom": 14
 		},{
-			"id": 12341,
+			"id": 01000,
 			"names": ["Vitoria", "Gasteiz"],
 			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
 			"zoom": 14
 		},{
-			"id": 12456,
+			"id": 20000,
 			"names": ["San Sebastian", "Sanse", "Donostia", "Donosti"],
-			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"center": {lat: 43.30747867294754, lng: -1.972252256469682},
 			"zoom": 14
 		}];
 		var localidadPorDefecto = localidades[0];
