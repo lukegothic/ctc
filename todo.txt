@@ -1,15 +1,17 @@
 Results - locations
-Resulsts - enlace linekdin
 Errores de iPad
 Preload de imágenes
-Titulo y subtítulo
 Que funcione en modo fullscreen
+Meter plaza de toros
 
+Datos de prueba ciudad Bilbao + organizar directorios de data e imagenes
 Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
+Result - Mostrar un estimado de lo bien que lo has hecho (en local) y mostrar una progresion
 
+Snifear todas las acciones de usuario (botones, etc)
 Iniciar contador cuando pulsa por primera vez la foto
 Carousel - rotacion y translacion de las fotos
-Diseño - tipografia
+Diseño - tipografias
 Carousel - animacion boing
 Carousel - Contain en vez de cover en full
 ¿ Cargar solo lugar actual ?

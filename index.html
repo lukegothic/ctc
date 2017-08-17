@@ -11,7 +11,8 @@
   </head>
   <body class="shake-horizontal shake-freeze">
     <div id="map"></div>
-		<div id="carousel" class="">
+    <h1>¿Conoces tu ciudad?</h1><h2><img /><span></span></h2>
+		<div id="carousel">
       <!--<div class="photo lefthidden" style="background-image:url(img/locations/00000001.jpg)"></div>-->
       <div class="photo left"></div>
       <div class="photo central"></div>
@@ -44,10 +45,15 @@
           <img src="xxx" alt="" /><span id="collectionName">Colecci&oacute;n</span><progress id="collectionprogress"></progress>
         </div>-->
         <div class="row buttons">
-          <button id="newGame">Nueva partida</button>
-          <div class="fb-like" data-href="https://www.facebook.com/fotoraton" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
-          <!--<a>Yo</a>-->
+          <div>
+            <button id="newGame">Jugar otra partida</button>
+          </div>
+          <div>
+            <div class="fb-like" data-href="https://www.facebook.com/fotoraton" data-layout="button_count" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+            <button id="whoIam">¿Quién soy?</button>
+          </div>
         </div>
+        <div class="LI-profile-badge hide" data-version="v1" data-size="large" data-locale="es_ES" data-type="vertical" data-theme="light" data-vanity="ivanperezgomez"><a class="LI-simple-link" href='https://es.linkedin.com/in/ivanperezgomez?trk=profile-badge'>Iván Pérez Gómez</a></div>
 			</div>
 		</div>
     <div id="timeleftbar" class="hide"><div class="bar"></div></div>
@@ -60,9 +66,11 @@
       js.src = "//connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v2.10&appId=782678315184880";
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));</script>
+    <script type="text/javascript" src="https://platform.linkedin.com/badges/js/profile.js" async defer></script>
     <script src="js/vendor/countUp.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDn8-1Fo2BSyDP_ahw8vNsATM9GnWcXD-Q&callback=game.setup&region=ES"></script>
+    <div class="hidden preload"></div>
   </body>
 </html>

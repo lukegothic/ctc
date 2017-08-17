@@ -4,17 +4,22 @@
     // CONSTS
 		var localidades = [{
 			"id": 31201,
-			"names": ["Pamplona", "Iruña"],
+			"names": ["Pamplona", "Iruña", "Iruñea"],
 			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
 			"zoom": 14
 		},{
-			"id": 45678,
-			"names": ["Bilbao"],
+			"id": 48000,
+			"names": ["Bilbao", "Bilbo"],
+			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
+			"zoom": 14
+		},{
+			"id": 12341,
+			"names": ["Vitoria", "Gasteiz"],
 			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
 			"zoom": 14
 		},{
 			"id": 12456,
-			"names": ["San Sebastian", "Donostia", "Donosti"],
+			"names": ["San Sebastian", "Sanse", "Donostia", "Donosti"],
 			"center": {lat: 42.81577003943018, lng: -1.6500215999999455},
 			"zoom": 14
 		}];
@@ -189,6 +194,15 @@
 		// Inicializar interfaz
     function initUI() {
       ui = {};
+			// HUD
+			ui.escudociudad	= document.querySelector("h2 img");
+			console.log(localidad);
+			var escudoUrl = "img/{0}/escudo_small.png".format(localidad.id);
+			var img = new Image();
+			img.src = escudoUrl;
+			ui.escudociudad.src = escudoUrl;
+			ui.nombreciudad = document.querySelector("h2 span");
+			ui.nombreciudad.innerHTML = luke.html.queryString("localidad") || localidad.names[0];
 			// Carrousel de fotos
       ui.carousel = document.getElementById("carousel");
 			/*
@@ -217,6 +231,15 @@
 			ui.results.score = document.getElementById("score");
 			ui.results.newGame = document.getElementById("newGame");
 			ui.results.newGame.addEventListener("click", start);
+			ui.results.who = document.querySelector(".LI-profile-badge");
+			ui.results.whoIam = document.getElementById("whoIam");
+			ui.results.whoIam.addEventListener("click", function() {
+				if (ui.results.who.classList.contains("hide")) {
+					ui.results.who.classList.remove("hide");
+				} else {
+					ui.results.who.classList.add("hide");
+				}
+			});
     }
 		// Muestra UI
 		function showUI() {
@@ -334,6 +357,7 @@
 			}
 			// Puntuacion (por cada acierto + (bonus por acertar todas y bonus de tiempo))
 			var score = Math.round((foundLocationsCount * scorePerLocation) + (allFound ? (scoreCompletionBonus + getTimeBonus(remainingTimeRatio)) : 0));
+			// TODO: calcular score maximo y porcentaje de performance
 			// Contador
 			window.setTimeout(function() {
 				new CountUp(ui.results.score, 0, score, 0, 2.5).start();
