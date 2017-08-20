@@ -107,7 +107,8 @@ Math.dice = function(num, sides) {
         return typeof args[number] != 'undefined' ? args[number] : match;
     });
 });
-!String.prototype.padStart && (String.prototype.padStart = function padStart(targetLength,padString) {
+// FIX: El metodo padStart de iOS esta bugeado y a veces da nulos, sobreescribimos siempre
+String.prototype.padStart = function padStart(targetLength,padString) {
     targetLength = targetLength>>0;
     padString = String(padString || ' ');
     if (this.length > targetLength) {
@@ -119,7 +120,7 @@ Math.dice = function(num, sides) {
         }
         return padString.slice(0,targetLength) + String(this);
     }
-});
+};
 // Public functions
 if (!window.luke) window.luke = {};
 luke.ajax = function(url, callback, data, x) {

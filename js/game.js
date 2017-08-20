@@ -25,7 +25,7 @@
 		}];
 		var localidadPorDefecto = localidades[0];
     var timePerLocation = 30000;
-    var locationsToGuess = 5;
+    var locationsToGuess = 4;
 		var failpenalty = 10000;
 		// scores
 		var scorePerLocation = 100;
@@ -143,8 +143,8 @@
 						// Establecemos que se ha encontrado la feature
             locations.features[0].properties.found = true;
 						event.feature.setProperty("found", true);
-						// Mostrar la feature descubierta
-            map.data.overrideStyle(event.feature, { fillColor: "#0000ff", strokeColor: "#0000ff" });
+						// Mostrar la feature descubierta (desactivado)
+            //map.data.overrideStyle(event.feature, { fillColor: "#0000ff", strokeColor: "#0000ff" });
 						showCurrentPlace();
 						showPlaceFoundState();
 						// Si se han averiguado todos los lugares terminamos el juego
@@ -172,8 +172,15 @@
 		// Actualizar contador de tiempo
     function updateTimer() {
       ui.remainingtimebar.style.width = ((timeleft * 100) / (timePerLocation * locationsToGuess)) + "%";
-      var seconds = Math.round(timeleft / 1000);
-      ui.timeleft.innerHTML = "{0}{1}".format((seconds >= 60 ? Math.floor(seconds / 60) + ":" : ""), Math.ceil(seconds % 60).toString().padStart((seconds >= 60 ? 2 : 1), "0"));
+      var timeInSeconds = Math.round(timeleft / 1000);
+      var timeAsText = "";
+      var minutes = Math.floor(timeInSeconds / 60);
+      var seconds = timeInSeconds % 60;
+      if (minutes) {
+        timeAsText += minutes + ":";
+      }
+      timeAsText += ((seconds < 10 && minutes > 0) ? "0" : "") + seconds;
+      ui.timeleft.innerHTML = timeAsText;
     }
 		function showPlaceFoundState() {
 			locations.features[0].properties.found ? ui.centralphoto.classList.add("found") : ui.centralphoto.classList.remove("found");
@@ -186,17 +193,55 @@
 			showPlaceFoundState();
 		}
     // resetea los resultados
-    function updateResults() {
+    function resetResults() {
+      // reiniciar estilos
       ui.results.stars.one.classList.remove("active");
       ui.results.stars.two.classList.remove("active");
       ui.results.stars.three.classList.remove("active");
+      ui.results.locations.one.classList.remove("found");
+      ui.results.locations.two.classList.remove("found");
+      ui.results.locations.three.classList.remove("found");
+      ui.results.locations.four.classList.remove("found");
+    }
+    function updateResults(starRating, perf) {
+      switch(starRating) {
+        case 3:
+          ui.results.stars.three.classList.add("active");
+        case 2:
+          ui.results.stars.two.classList.add("active");
+        case 1:
+          ui.results.stars.one.classList.add("active");
+        break;
+      }
+      ui.results.performance.innerHTML = "" + perf + "%";
+      // TODO: generar automaticamente en funcion de numero de locations
+      // asignar fotos y nombres a panel de resultados
+      ui.results.locations.one.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+      if (locations.features[0].properties.found) {
+        ui.results.locations.one.classList.add("found");
+        ui.results.locations.one.querySelector(".name").innerHTML = locations.features[0].properties.name;
+      }
+      ui.results.locations.two.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
+      if (locations.features[1].properties.found) {
+        ui.results.locations.two.classList.add("found");
+        ui.results.locations.two.querySelector(".name").innerHTML = locations.features[1].properties.name;
+      }
+      ui.results.locations.three.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[2].properties.id.toString().padStart(8,"0"));
+      if (locations.features[2].properties.found) {
+        ui.results.locations.three.classList.add("found");
+        ui.results.locations.three.querySelector(".name").innerHTML = locations.features[2].properties.name;
+      }
+      ui.results.locations.four.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[3].properties.id.toString().padStart(8,"0"));
+      if (locations.features[3].properties.found) {
+        ui.results.locations.four.classList.add("found");
+        ui.results.locations.four.querySelector(".name").innerHTML = locations.features[3].properties.name;
+      }
     }
 		// Inicializar interfaz
     function initUI() {
       ui = {};
 			// HUD
 			ui.escudociudad	= document.querySelector("h2 img");
-			console.log(localidad);
 			var escudoUrl = "img/{0}/escudo_small.png".format(localidad.id);
 			var img = new Image();
 			img.src = escudoUrl;
@@ -224,22 +269,31 @@
 			// Panel de resultados y textos
       ui.endGameText = document.querySelector("#gameendtext .content");
 			ui.results = {};
-			ui.results.stars = {};
-			ui.results.stars.one = document.getElementById("star1");
-			ui.results.stars.two = document.getElementById("star2");
-			ui.results.stars.three = document.getElementById("star3");
+			ui.results.stars = {
+        one: document.getElementById("star1"),
+        two: document.getElementById("star2"),
+        three: document.getElementById("star3")
+      };
 			ui.results.score = document.getElementById("score");
 			ui.results.newGame = document.getElementById("newGame");
 			ui.results.newGame.addEventListener("click", start);
 			ui.results.who = document.querySelector(".LI-profile-badge");
 			ui.results.whoIam = document.getElementById("whoIam");
-			ui.results.whoIam.addEventListener("click", function() {
-				if (ui.results.who.classList.contains("hide")) {
-					ui.results.who.classList.remove("hide");
-				} else {
-					ui.results.who.classList.add("hide");
-				}
-			});
+			ui.results.whoIam.addEventListener("click", showMe);
+      ui.results.locations = {
+        one: document.getElementById("location1"),
+        two: document.getElementById("location2"),
+        three: document.getElementById("location3"),
+        four: document.getElementById("location4")
+      };
+      ui.results.performance = document.querySelector("#performance strong");
+    }
+    function showMe() {
+			if (ui.results.who.classList.contains("hide")) {
+				ui.results.who.classList.remove("hide");
+			} else {
+				ui.results.who.classList.add("hide");
+			}
     }
 		// Muestra UI
 		function showUI() {
@@ -346,26 +400,23 @@
 			var foundLocationsCount = locations.features.filter(function(location) { return location.properties.found; }).length;
 			var allFound = foundLocationsCount === locationsToGuess;
 			var starRating = allFound ? (remainingTimeRatio > 0.5 ? 3 : 2) : (foundLocationsCount >= Math.ceil(locationsToGuess / 2) ? 1 : 0);
-			switch(starRating) {
-				case 3:
-					ui.results.stars.three.classList.add("active");
-				case 2:
-					ui.results.stars.two.classList.add("active");
-				case 1:
-					ui.results.stars.one.classList.add("active");
-				break;
-			}
 			// Puntuacion (por cada acierto + (bonus por acertar todas y bonus de tiempo))
 			var score = Math.round((foundLocationsCount * scorePerLocation) + (allFound ? (scoreCompletionBonus + getTimeBonus(remainingTimeRatio)) : 0));
-			// TODO: calcular score maximo y porcentaje de performance
+			// TODO: calcular score maximo y porcentaje de performance, lo de ahora es un poco chunguele
+      var medianScore = 1800;
+      var maxScore = 8000;
+      var perf = score / medianScore;
+      if (perf >= 1) {
+        perf = 1;
+        perf += (score - medianScore) / (maxScore - medianScore);
+      }
+      perf *= 50;
+      updateResults(starRating, Math.round(perf));
 			// Contador
 			window.setTimeout(function() {
 				new CountUp(ui.results.score, 0, score, 0, 2.5).start();
-			}, 1000)
-			// TODO: mostrar y resaltar sitios nuevos y los no averiguados en b/n
-
+			}, 2100)
 			// TODO: mostrar en el resumen el conocimiento de Pamplona (xx de 38)
-
 			// TODO: enviar puntuacion a DB y mostrar los mejores del dia (recuerda descartar puntuaciones meh)
 			// TODO: {time:xxxx,locations:[1:true,2:false,3:true,4:false,5:true],score:xxxx,localidad:xxxxx}
     }
@@ -403,7 +454,7 @@
 			// Actualizar
 			updateMap();
 			updatePhotos();
-      updateResults();
+      resetResults();
 			// Calcular tiempo de juego (en ms)
       timeleft = (timePerLocation * locationsToGuess);
       updateTimer();
