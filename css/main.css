@@ -232,6 +232,7 @@ h2 span {
   bottom: 40px;
   right: 70px;
   width: 13%;
+	height: auto;
 }
 #carousel.thumbnail .photo {
   height:0;

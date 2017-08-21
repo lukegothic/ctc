@@ -1,7 +1,7 @@
 +Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
 +Preload de imagenes y mensaje inicial (seleccionando lugares...)
 +Mostrar una progresion/comparativa con tus anteriores veces
-+Datos de prueba ciudad Bilbao + organizar directorios de data e imagenes
++Datos de prueba ciudad Bilbao y organizar directorios de data e imagenes
 
 Hacer funcionar el modo fullscreen
 Snifear todas las acciones de usuario (botones, etc)
@@ -14,3 +14,20 @@ Fotos 3:2
 ¿ Cargar solo lugar actual ?
 Tabla de puntuaciones + DB
 Generar dinamicamente locations de los resultados en funcion del numero de locs
+
+++Opinion usuarios++
+
+Kike:
+-Esquema de color, muy feo el azul
+-Bordes de fotos muy gordos
+-Contador más translucido
+-Carrusel de fotos, que tenga una ruleta o unas flechas o algo que indiquen que puedes avanzar o retroceder
+-Indicar aciertos
+-Revisar diseño de carrusel de fotos grande, que parezca una ruleta (mapa de fondo con mapa de parcelas)
+-Boton de volver a vista general
+-Navegacion con botones +/-
+-Poder cerrar el perfil de una manera que no sea el mismo boton
+-Movimiento de las fotos del final, es necesario?
+-Sobreado en todos los elementos del final, no solo en el boton
+Juanlu:
+-Que te proponga pasar a la siguiente o que lo haga automático tras acertar
