@@ -45,6 +45,7 @@
         zoomControl: false,
         mapTypeControl: false,
         streetViewControl: false,
+				fullscreenControl: false,
         styles: [
             {
               "featureType": "administrative",
