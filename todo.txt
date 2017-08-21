@@ -1,7 +1,7 @@
-+Datos de prueba ciudad Bilbao + organizar directorios de data e imagenes
 +Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
-+Mostrar una progresion/comparativa con tus anteriores veces
 +Preload de imagenes y mensaje inicial (seleccionando lugares...)
++Mostrar una progresion/comparativa con tus anteriores veces
++Datos de prueba ciudad Bilbao + organizar directorios de data e imagenes
 
 Hacer funcionar el modo fullscreen
 Snifear todas las acciones de usuario (botones, etc)
