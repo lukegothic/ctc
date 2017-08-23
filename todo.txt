@@ -1,8 +1,12 @@
 +Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
 +Preload de imagenes y mensaje inicial (seleccionando lugares...)
 +Mostrar una progresion/comparativa con tus anteriores veces
-+Datos de prueba ciudad Bilbao y organizar directorios de data e imagenes
++Datos de prueba ciudad Bilbao
 
+Tutorial: Eventizado, con flashes y popups (iniciar, fallo, acierto) + PAUSA
+Tutorial avanzado: Modo 2.5D
+Cursor
+Botones de zoom e inicio
 Hacer funcionar el modo fullscreen
 Snifear todas las acciones de usuario (botones, etc)
 Iniciar contador cuando pulsa por primera vez la foto
@@ -31,3 +35,5 @@ Kike:
 -Sobreado en todos los elementos del final, no solo en el boton
 Juanlu:
 -Que te proponga pasar a la siguiente o que lo haga automático tras acertar
+Pili:
+-Tutorial

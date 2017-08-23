@@ -2,6 +2,11 @@
 (function(global) {
 	var game = (function() {
     // CONSTS
+		var states = {
+			"RUNNING": 1,
+			"PAUSED": 2,
+			"GAMEOVER": 3
+		};
 		var localidades = [{
 			"id": 31201,
 			"names": ["Pamplona", "Iruña", "Iruñea"],
@@ -32,7 +37,7 @@
 		var scoreCompletionBonus = 300;
 		var scoreTimeBonus = locationsToGuess * scorePerLocation;
     // VARS
-    var localidad, allLocations, locations, map, timeleft, ui, infowindow, gameOver, mapClick, featureClick;
+    var localidad, allLocations, locations, map, timeleft, ui, infowindow, state, mapClick, featureClick;
 		// Inicializar GMap
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
@@ -42,7 +47,7 @@
         zoom: localidad.zoom,
         mapTypeId: google.maps.MapTypeId.HYBRID,
         labels: true,
-        zoomControl: false,
+        zoomControl: true,
         mapTypeControl: false,
         streetViewControl: false,
 				fullscreenControl: false,
@@ -188,9 +193,11 @@
 		}
 		// Actualizar las fotos
 		function updatePhotos() {
-			ui.leftphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[locations.features.length - 1].properties.id.toString().padStart(8,"0"));
-			ui.centralphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
-			ui.rightphoto.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
+			var dataDir = "data/{0}".format(localidad.id);
+			var imageUrl = "url({0}/locations/{1}.jpg)".format(dataDir, "{0}");
+			ui.leftphoto.style.backgroundImage = imageUrl.format(locations.features[locations.features.length - 1].properties.id.toString().padStart(8,"0"));
+			ui.centralphoto.style.backgroundImage = imageUrl.format(locations.features[0].properties.id.toString().padStart(8,"0"));
+			ui.rightphoto.style.backgroundImage = imageUrl.format(locations.features[1].properties.id.toString().padStart(8,"0"));
 			showPlaceFoundState();
 		}
     // resetea los resultados
@@ -217,22 +224,24 @@
       ui.results.performance.innerHTML = "" + perf + "%";
       // TODO: generar automaticamente en funcion de numero de locations
       // asignar fotos y nombres a panel de resultados
-      ui.results.locations.one.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[0].properties.id.toString().padStart(8,"0"));
+			var dataDir = "data/{0}".format(localidad.id);
+			var imageUrl = "url({0}/locations/{1}.jpg)".format(dataDir, "{0}");
+      ui.results.locations.one.style.backgroundImage = imageUrl.format(locations.features[0].properties.id.toString().padStart(8,"0"));
       if (locations.features[0].properties.found) {
         ui.results.locations.one.classList.add("found");
         ui.results.locations.one.querySelector(".name").innerHTML = locations.features[0].properties.name;
       }
-      ui.results.locations.two.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[1].properties.id.toString().padStart(8,"0"));
+      ui.results.locations.two.style.backgroundImage = imageUrl.format(locations.features[1].properties.id.toString().padStart(8,"0"));
       if (locations.features[1].properties.found) {
         ui.results.locations.two.classList.add("found");
         ui.results.locations.two.querySelector(".name").innerHTML = locations.features[1].properties.name;
       }
-      ui.results.locations.three.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[2].properties.id.toString().padStart(8,"0"));
+      ui.results.locations.three.style.backgroundImage = imageUrl.format(locations.features[2].properties.id.toString().padStart(8,"0"));
       if (locations.features[2].properties.found) {
         ui.results.locations.three.classList.add("found");
         ui.results.locations.three.querySelector(".name").innerHTML = locations.features[2].properties.name;
       }
-      ui.results.locations.four.style.backgroundImage = "url(img/locations/{0}.jpg)".format(locations.features[3].properties.id.toString().padStart(8,"0"));
+      ui.results.locations.four.style.backgroundImage = imageUrl.format(locations.features[3].properties.id.toString().padStart(8,"0"));
       if (locations.features[3].properties.found) {
         ui.results.locations.four.classList.add("found");
         ui.results.locations.four.querySelector(".name").innerHTML = locations.features[3].properties.name;
@@ -243,9 +252,9 @@
       ui = {};
 			// HUD
 			ui.escudociudad	= document.querySelector("h2 img");
-			var escudoUrl = "img/{0}/escudo_small.png".format(localidad.id);
-			var img = new Image();
-			img.src = escudoUrl;
+			var escudoUrl = "data/{0}/escudo_small.png".format(localidad.id);
+			//var img = new Image();
+			//img.src = escudoUrl;
 			ui.escudociudad.src = escudoUrl;
 			ui.nombreciudad = document.querySelector("h2 span");
 			ui.nombreciudad.innerHTML = luke.html.queryString("localidad") || localidad.names[0];
@@ -313,7 +322,7 @@
     var stopMain, lastFrameTime = 0;
     function gameLoop(time) {
       stopMain = window.requestAnimationFrame(gameLoop);
-      if (!gameOver && timeleft > 0) {
+      if (state === states.RUNNING && timeleft > 0) {
         update({
           time: time,
           delta: time - lastFrameTime
@@ -381,7 +390,7 @@
 			// Mensaje de tiempo o terminado
       ui.endGameText.innerHTML = winstate ? "TERMINADO" : "TIEMPO";
 			// Establecer juego acabado
-			gameOver = true;
+			state = states.GAMEOVER;
 			// Eliminar control clic del mapa y features
       infowindow && infowindow.close();
 			//mapClick.remove();
@@ -463,7 +472,7 @@
 			showUI();
 			// Iniciar loop
 			// TODO: mejora: Iniciar el loop al cerrar por primera vez las fotos?
-			gameOver = false;
+			state = states.RUNNING;
     }
 		var gameObj = {
 			setup: setup,
@@ -483,6 +492,9 @@
 					location.properties.found = true;
 				});
 				end(true);
+			},
+			setState: function (s) {
+				state = s;
 			}
 		};
 		return gameObj;
