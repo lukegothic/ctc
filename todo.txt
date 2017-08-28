@@ -38,5 +38,5 @@ Pili:
 -Tutorial
 -CArgar las label oficiales de pamplona o IGN en vez de las de google
 Garazi:
--El popup del final se corta verticalmente
+-El popup del final se corta verticalmente a resoluciones menores a 4:3
 -Chispitas en la barra roja
