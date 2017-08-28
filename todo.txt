@@ -21,7 +21,7 @@ Generar dinamicamente locations de los resultados en funcion del numero de locs
 
 ++Opinion usuarios++
 
-Kike:
+Kiko:
 -Esquema de color, muy feo el azul
 -Bordes de fotos muy gordos
 -Contador más translucido
@@ -29,7 +29,6 @@ Kike:
 -Indicar aciertos
 -Revisar diseño de carrusel de fotos grande, que parezca una ruleta (mapa de fondo con mapa de parcelas)
 -Boton de volver a vista general
--Navegacion con botones +/-
 -Poder cerrar el perfil de una manera que no sea el mismo boton
 -Movimiento de las fotos del final, es necesario?
 -Sobreado en todos los elementos del final, no solo en el boton
@@ -37,8 +36,7 @@ Juanlu:
 -Que te proponga pasar a la siguiente o que lo haga automático tras acertar
 Pili:
 -Tutorial
+-CArgar las label oficiales de pamplona o IGN en vez de las de google
 Garazi:
--A veces las roads blancas tapan el mapa, quitarlas de configuracion
 -El popup del final se corta verticalmente
--Botones de +/-
 -Chispitas en la barra roja

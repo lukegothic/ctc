@@ -97,6 +97,22 @@
               ]
             },
             {
+    "featureType": "road.arterial",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+  "featureType": "road.local",
+  "stylers": [
+    {
+      "visibility": "off"
+    }
+  ]
+},
+            {
               "featureType": "road.local",
               "elementType": "labels",
               "stylers": [
