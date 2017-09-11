@@ -301,6 +301,7 @@
         three: document.getElementById("star3")
       };
 			ui.results.score = document.getElementById("score");
+			ui.results.scoreComparison = document.getElementById("scoreComparison");
 			ui.results.newGame = document.getElementById("newGame");
 			ui.results.newGame.addEventListener("click", start);
 			ui.results.who = document.querySelector(".LI-profile-badge");
@@ -438,6 +439,17 @@
       }
       perf *= 50;
       updateResults(starRating, Math.round(perf));
+			// Por ultimo, guardar puntuacion y mostrar si estamos por encima o por debajo de nuestra media
+			var myScores = localStorage.getItem("myScores");
+			myScores = myScores && myScores.split(";") || [];
+			if (myScores.length > 0) {
+				var betterScore = score >= myScores.reduce(function(sum, item) { return sum + item; }, 0) / myScores.length;
+				// TODO: fontawesome
+				ui.results.scoreComparison.classList.remove(!betterScore ? "fa-better" : "fa-worse");
+				ui.results.scoreComparison.classList.add(betterScore ? "fa-better" : "fa-worse");
+			}
+			myScores.push(score);
+			localStorage.setItem("myScores", myScores.join(";"));
 			// Contador
 			window.setTimeout(function() {
 				new CountUp(ui.results.score, 0, score, 0, 2.5).start();

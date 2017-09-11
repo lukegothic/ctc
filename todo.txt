@@ -1,6 +1,5 @@
 +Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
 +Preload de imagenes y mensaje inicial (seleccionando lugares...)
-+Mostrar una progresion/comparativa con tus anteriores veces
 +Datos de prueba ciudad Bilbao
 
 Tutorial: Eventizado, con flashes y popups (iniciar, fallo, acierto) + PAUSA
