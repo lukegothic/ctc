@@ -426,12 +426,8 @@
 			// Guardar las locations encontradas y mostrar progreso
 			var storeLocationIds = localStorage.getItem("guessedLocations");
 			storeLocationIds = storeLocationIds && storeLocationIds.split(";") || [];
-			var foundLocations = locations.features.filter(function(location) { return location.properties.found; })
-			foundLocations.forEach(function(location) {
-				if (storeLocationIds.indexOf(""+location.properties.id) === -1) {
-					storeLocationIds.push(""+location.properties.id);
-				}
-			});
+			var foundLocations = locations.features.filter(function(location) { return location.properties.found; }).map(function(location) { return ""+location.properties.id; });
+			storeLocationIds = storeLocationIds.concatUnique(foundLocations);
 			localStorage.setItem("guessedLocations", storeLocationIds.join(";"));
 			ui.results.collectionprogress.value = storeLocationIds.length;
 			ui.results.collectionprogress.max = allLocations.features.length;
@@ -515,7 +511,7 @@
 			// anadir las que faltan
 			locations = locations.concat(guessedLocations.slice(0, locationsToGuess - locations.length));
 			// Quedarse con las n primeras
-			locations = { "type": "FeatureCollection", "features": locations };
+			locations = { "type": "FeatureCollection", "features": JSON.parse(JSON.stringify(locations)) };
 			// Actualizar
 			updateMap();
 			updatePhotos();
