@@ -1,7 +1,7 @@
-+Result - Mostrar resumen de conocimiento del lugar + controlar sitios mostrados
 +Preload de imagenes y mensaje inicial (seleccionando lugares...)
-+Datos de prueba ciudad Bilbao
 
+Result - Diseno progressbar conocimiento
+Datos otras ciudades ciudad Bilbao
 Tutorial: Eventizado, con flashes y popups (iniciar, fallo, acierto) + PAUSA
 Tutorial avanzado: Modo 2.5D
 Cursor
@@ -35,7 +35,7 @@ Juanlu:
 -Que te proponga pasar a la siguiente o que lo haga automático tras acertar
 Pili:
 -Tutorial
--CArgar las label oficiales de pamplona o IGN en vez de las de google
+-Cargar las label oficiales de pamplona o IGN en vez de las de google
 Garazi:
 -El popup del final se corta verticalmente a resoluciones menores a 4:3
 -Chispitas en la barra roja
