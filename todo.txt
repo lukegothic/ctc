@@ -1,41 +1,37 @@
-+Preload de imagenes y mensaje inicial (seleccionando lugares...)
-
-Result - Diseno progressbar conocimiento
-Datos otras ciudades ciudad Bilbao
-Tutorial: Eventizado, con flashes y popups (iniciar, fallo, acierto) + PAUSA
-Tutorial avanzado: Modo 2.5D
-Cursor
-Botones de zoom e inicio
+Programacion
+Boton de inicio
+Preload de imagenes y mensaje inicial (seleccionando lugares...)
 Hacer funcionar el modo fullscreen
+Tutorial: Eventizado, con flashes y popups (iniciar, fallo, acierto) + PAUSA
 Snifear todas las acciones de usuario (botones, etc)
 Iniciar contador cuando pulsa por primera vez la foto
-Carousel - rotacion y translacion de las fotos
-Diseño - tipografias
-Carousel - animacion boing
-Carousel - Contain en vez de cover en full
-Fotos 3:2
-¿ Cargar solo lugar actual ?
-Tabla de puntuaciones + DB
 Generar dinamicamente locations de los resultados en funcion del numero de locs
+Poder cerrar el perfil de una manera que no sea el mismo boton
+Que te proponga pasar a la siguiente o que lo haga automático tras acertar
 
-++Opinion usuarios++
+Diseño
+Carrusel
+ Rotacion y translacion de las fotos
+ Ruleta o unas flechas o algo que indiquen que puedes avanzar o retroceder
+ Que parezca una ruleta (mapa de fondo con mapa de parcelas)
+ Animacion boing
+ Contain en vez de cover en full
+Resultados
+  Progressbar conocimiento
+  Movimiento de las fotos del final, es necesario?
+  Sobreado en todos los elementos del final, no solo en el boton
+Cursor
+Tutorial
+Tipografias
+Esquema de color, muy feo el azul
+Bordes de fotos muy gordos
+Contador más translucido
+Indicar aciertos
+Chispitas en la barra roja
+El popup del final se corta verticalmente a resoluciones menores a 4:3
 
-Kiko:
--Esquema de color, muy feo el azul
--Bordes de fotos muy gordos
--Contador más translucido
--Carrusel de fotos, que tenga una ruleta o unas flechas o algo que indiquen que puedes avanzar o retroceder
--Indicar aciertos
--Revisar diseño de carrusel de fotos grande, que parezca una ruleta (mapa de fondo con mapa de parcelas)
--Boton de volver a vista general
--Poder cerrar el perfil de una manera que no sea el mismo boton
--Movimiento de las fotos del final, es necesario?
--Sobreado en todos los elementos del final, no solo en el boton
-Juanlu:
--Que te proponga pasar a la siguiente o que lo haga automático tras acertar
-Pili:
--Tutorial
--Cargar las label oficiales de pamplona o IGN en vez de las de google
-Garazi:
--El popup del final se corta verticalmente a resoluciones menores a 4:3
--Chispitas en la barra roja
+Datos
+Bilbao/Donosti/Vitoria -> analizar mapas poi
+Fotos 3:2
+Tabla de puntuaciones + DB
+Cargar las label oficiales de pamplona o IGN en vez de las de google
