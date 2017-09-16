@@ -181,7 +181,39 @@
 					//showCurrentPlaceName(event.latLng);
 				}
       });
+			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(new HomeButton());
     }
+		function HomeButton() {
+			// TODO: STYLES EN CSS
+			var controlDiv = document.createElement('div');
+			// Set CSS for the control border.
+		  var controlUI = document.createElement('div');
+		  controlUI.style.backgroundColor = '#fff';
+		  controlUI.style.border = '2px solid #fff';
+		  controlUI.style.borderRadius = '3px';
+		  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+		  controlUI.style.cursor = 'pointer';
+		  controlUI.style.marginBottom = '22px';
+		  controlUI.style.textAlign = 'center';
+		  controlUI.title = 'Click to recenter the map';
+		  controlDiv.appendChild(controlUI);
+
+		  // Set CSS for the control interior.
+		  var controlText = document.createElement('div');
+		  controlText.style.color = 'rgb(25,25,25)';
+		  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+		  controlText.style.fontSize = '16px';
+		  controlText.style.lineHeight = '38px';
+		  controlText.style.paddingLeft = '5px';
+		  controlText.style.paddingRight = '5px';
+		  controlText.innerHTML = 'Home';
+		  controlUI.appendChild(controlText);
+
+		  controlUI.addEventListener('click', goHome);
+
+			controlDiv.index = 1;
+			return controlDiv;
+		}
 		// Agrega las locations al mapa
 		function updateMap() {
 			// Limpiar capa
@@ -301,6 +333,7 @@
         three: document.getElementById("star3")
       };
 			ui.results.score = document.getElementById("score");
+			ui.results.scoreComparison = document.getElementById("scoreComparison");
 			ui.results.newGame = document.getElementById("newGame");
 			ui.results.newGame.addEventListener("click", start);
 			ui.results.who = document.querySelector(".LI-profile-badge");
@@ -313,7 +346,12 @@
         four: document.getElementById("location4")
       };
       ui.results.performance = document.querySelector("#performance strong");
+			ui.results.collectionprogress = document.getElementById("collectionprogress");
     }
+		function goHome() {
+			map.setZoom(localidad.zoom);
+			map.setCenter(localidad.center);
+		}
     function showMe() {
 			if (ui.results.who.classList.contains("hide")) {
 				ui.results.who.classList.remove("hide");
@@ -421,9 +459,18 @@
 			!bounds.isEmpty() && map.fitBounds(bounds);
 			// Esconder interfaz de juego (y mostrar la interfaz de resumen)
 			hideUI();
+			// Guardar las locations encontradas y mostrar progreso
+			var storeLocationIds = localStorage.getItem("guessedLocations");
+			storeLocationIds = storeLocationIds && storeLocationIds.split(";") || [];
+			var foundLocations = locations.features.filter(function(location) { return location.properties.found; }).map(function(location) { return ""+location.properties.id; });
+			storeLocationIds = storeLocationIds.concatUnique(foundLocations);
+			localStorage.setItem("guessedLocations", storeLocationIds.join(";"));
+			ui.results.collectionprogress.value = storeLocationIds.length;
+			ui.results.collectionprogress.max = allLocations.features.length;
+			ui.results.collectionprogress.innerHTML = Math.round(storeLocationIds.length * 100 / allLocations.features.length) + " %";
 			// Estrellas (1 -> la mitad de los lugares (redondeo hacia arriba), 2 -> todos los lugares, 3 -> en menos de la mitad del tiempo)
 			var remainingTimeRatio = timeleft / (timePerLocation * locationsToGuess);
-			var foundLocationsCount = locations.features.filter(function(location) { return location.properties.found; }).length;
+			var foundLocationsCount = foundLocations.length;
 			var allFound = foundLocationsCount === locationsToGuess;
 			var starRating = allFound ? (remainingTimeRatio > 0.5 ? 3 : 2) : (foundLocationsCount >= Math.ceil(locationsToGuess / 2) ? 1 : 0);
 			// Puntuacion (por cada acierto + (bonus por acertar todas y bonus de tiempo))
@@ -438,6 +485,17 @@
       }
       perf *= 50;
       updateResults(starRating, Math.round(perf));
+			// Por ultimo, guardar puntuacion y mostrar si estamos por encima o por debajo de nuestra media
+			var myScores = localStorage.getItem("myScores");
+			myScores = myScores && myScores.split(";") || [];
+			if (myScores.length > 0) {
+				var betterScore = score >= myScores.reduce(function(sum, item) { return sum + item; }, 0) / myScores.length;
+				// TODO: fontawesome
+				ui.results.scoreComparison.classList.remove(!betterScore ? "fa-better" : "fa-worse");
+				ui.results.scoreComparison.classList.add(betterScore ? "fa-better" : "fa-worse");
+			}
+			myScores.push(score);
+			localStorage.setItem("myScores", myScores.join(";"));
 			// Contador
 			window.setTimeout(function() {
 				new CountUp(ui.results.score, 0, score, 0, 2.5).start();
@@ -474,9 +532,22 @@
     function start() {
 			// Aleatorizar
 			// TODO: mejora_ no mostrar las que ya ha acertado
-      allLocations.features.shuffle();
+			var guessedLocationIds = localStorage.getItem("guessedLocations");
+			guessedLocationIds = guessedLocationIds && guessedLocationIds.split(";") || [];
+			var guessedLocations = [], unknownLocations = [];
+      allLocations.features.shuffle().forEach(function(location) {
+				if (guessedLocationIds.indexOf(""+location.properties.id) === -1) {
+					unknownLocations.push(location);
+				} else {
+					guessedLocations.push(location);
+				}
+			});
+			// anadir desconocidas
+			locations = unknownLocations.slice(0, locationsToGuess);
+			// anadir las que faltan
+			locations = locations.concat(guessedLocations.slice(0, locationsToGuess - locations.length));
 			// Quedarse con las n primeras
-      locations = JSON.parse(JSON.stringify({"type":"FeatureCollection","features": allLocations.features.slice(0, locationsToGuess) }));
+			locations = { "type": "FeatureCollection", "features": JSON.parse(JSON.stringify(locations)) };
 			// Actualizar
 			updateMap();
 			updatePhotos();
@@ -497,6 +568,7 @@
 			next: next,
 			prev: prev,
 			end: end,
+			goHome: goHome,
 			map: function() {
 				return map;
 			},

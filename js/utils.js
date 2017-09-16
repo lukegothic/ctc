@@ -101,6 +101,15 @@ Math.dice = function(num, sides) {
     }
     return this;
 });
+!Array.prototype.concatUnique && (Array.prototype.concatUnique = function(other) {
+  var a = this;
+  other.forEach(function(item) {
+    if (a.indexOf(item) === -1) {
+      a.push(item);
+    }
+  });
+  return a;
+});
 !String.prototype.format && (String.prototype.format = function() {
     var args = arguments;
     return this.replace(/{(\d+)}/g, function(match, number) {
